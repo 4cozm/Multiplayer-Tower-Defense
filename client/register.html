@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
@@ -44,32 +44,34 @@
       <button id="back" style="margin-top: 50px">뒤로가기</button>
     </div>
     <script>
-      document.getElementById("register").addEventListener("click", () => {
-        const username = document.getElementById("username").value;
-        const password = document.getElementById("password").value;
+      document.getElementById('register').addEventListener('click', () => {
+        const user_id = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
 
-        fetch("http://15.165.15.118:3000/register", {
-          method: "POST",
+        fetch('http://127.0.0.1:5555/signUp', {
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ username, password }),
+          body: JSON.stringify({ user_id, password }),
         })
-          .then((response) => {
-            if (response.status === 201) {
-              alert("회원가입 성공");
-              window.location.href = "index.html";
+          .then(async (response) => {
+            if (response.ok) {
+              const responseData = await response.json();
+              alert('회원가입 성공');
+              window.location.href = 'index.html';
             } else {
-              alert("회원가입 실패");
+              const responseData = await response.json();
+              alert(responseData.errorMessage);
             }
           })
           .catch((error) => {
-            console.error("Error:", error);
+            console.error('Error:', error);
           });
       });
 
-      document.getElementById("back").addEventListener("click", () => {
-        window.location.href = "index.html";
+      document.getElementById('back').addEventListener('click', () => {
+        window.location.href = 'index.html';
       });
     </script>
   </body>
