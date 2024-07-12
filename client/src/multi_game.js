@@ -273,7 +273,7 @@ Promise.all([
     }
   });
 
-  serverSocket.on('connect', () => {
+  serverSocket.on('connection', (data) => {
     // TODO. 서버와 연결되면 대결 대기열 큐 진입
   });
 
