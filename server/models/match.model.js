@@ -6,7 +6,7 @@ export const addMatch = (uuid) => {
   matchModel.push(player);
 };
 
-export const getMatch = (uuid) => {
+export const getMatchPlayers = () => {
   // 조회
-  return matchModel[uuid];
+  return matchModel;
 };

@@ -8,6 +8,9 @@ if (!localStorage.getItem('token')) {
 }
 
 let serverSocket;
+
+const CLIENT_VERSION = '1.0.0';
+
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
@@ -330,6 +333,15 @@ Promise.all([
     console.log('Received error:', errorResponse);
   });
 });
+
+const sendEvent = (handlerId, payload) => {
+  serverSocket.emit('event', {
+    userId: localStorage.getItem('user_Id'),
+    clientVersion: CLIENT_VERSION,
+    handlerId,
+    payload,
+  });
+};
 
 const buyTowerButton = document.createElement('button');
 buyTowerButton.textContent = '타워 구입';
