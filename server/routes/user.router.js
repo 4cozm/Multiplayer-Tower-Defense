@@ -1,62 +1,77 @@
 import express from 'express';
-import { prisma } from '../util/prisma/index.js';
 import bcrypt from 'bcrypt';
+import configs from '../util/config.js';
 import jwt from 'jsonwebtoken';
+import { findUserByID, getPasswordById, registerUser } from '../db/user/user.db.js';
 
-const IDRULES = /^[a-z|A-Z|0-9]+$/;
-const router = express.Router();
-const saltRounds = await bcrypt.genSalt(10);
+const accountRouter = express.Router();
 
-router.post('/sign-up', async (req, res, next) => {
-  const { id, password } = req.body;
-  const isExistUser = await prisma.user.findFirst({
-    where: {
-      id,
-    },
-  });
+const signUp = async (req, res, next) => {
+  const { user_id, password } = req.body;
 
-  if (isExistUser) {
-    return res.status(409).json({ message: '이미 존재하는 아이디 입니다' });
-  } else if (!IDRULES.test(id)) {
-    return res
-      .status(400)
-      .json({ message: '아이디는 영어 소문자와 숫자 조합으로 구성되어야 합니다' });
-  } else if (password.length < 6) {
-    return res.status(400).json({ message: `비밀번호는 최소 6자 이상이여야 합니다` });
+  if (!user_id) {
+    return res.status(400).json({ errorMessage: '유저 아이디를 입력해 주세요' });
   }
-  const hashedPassword = await bcrypt.hash(password, saltRounds);
-  // Create new user
-  const registeredUser = await prisma.user.create({
-    data: { id, password: hashedPassword },
-  });
-
-  await prisma.rank.create({
-    data: { user_Id: registeredUser.user_Id, highscore: 0 },
-  });
-
-  return res.status(201).json({ message: '회원가입이 완료되었습니다' });
-});
-
-router.post('/sign-in', async (req, res, next) => {
-  const { id, password } = req.body;
-
-  const user = await prisma.user.findFirst({ where: { id } });
-  if (!user) {
-    return res.status(401).json({ message: '존재하지 않는 아이디입니다' });
-  } else if (!(await bcrypt.compare(password, user.password))) {
-    return res.status(401).json({ message: '비밀번호가 일치하지 않습니다.' });
+  if (!password) {
+    return res.status(400).json({ errorMessage: '비밀번호를 입력해 주세요' });
   }
 
-  const token = jwt.sign(
-    {
-      userId: user.user_Id,
-    },
-    process.env.CUSTOM_SECRET_KEY,
-  );
+  const validatePassword = (password) => {
+    if (password == null || password == undefined) {
+      return res.status(400).json({ errorMessage: '사용할 수 없는 문구가 포함되어 있습니다' });
+    }
+    const regex = /^(?=\S+$).{8,}$/;
+    return regex.test(password);
+  };
+  if (!validatePassword(password)) {
+    return res.status(400).json({ errorMessage: '비밀번호 유효성 검사 실패' });
+  }
+  try {
+    const exists = await findUserByID(user_id);
+    if (exists) {
+      return res.status(409).json({ errorMessage: '이미 존재하는 사용자입니다.' });
+    }
 
-  res.setHeader('Authorization', `Bearer ${token}`);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-  return res.status(200).json({ message: '로그인 성공', data: `Bearer ${token}` });
-});
+    await registerUser(user_id, hashedPassword);
 
-export default router;
+    return res.status(201).json({ message: '회원가입 완료' });
+  } catch (error) {
+    console.error('회원가입 오류:', error);
+    return res.status(500).json({ errorMessage: '서버 오류가 발생했습니다.' });
+  }
+};
+
+const login = async (req, res) => {
+  try {
+    const jwtSecret = configs.jwtSecret;
+    const { user_id, password } = req.body;
+
+    const exists = await findUserByID(user_id);
+    if (!exists) {
+      return res.status(409).json({ errorMessage: '존재하지 않는 사용자 입니다.' });
+    }
+
+    const hashedPassword = await getPasswordById(user_id);
+    if (!hashedPassword) {
+      return res.status(404).json({ errorMessage: '서버 DB 오류 : 저장된 비밀번호를 찾을 수 없습니다' });
+    }
+    const passwordMatch = await bcrypt.compare(password, hashedPassword);
+    if (!passwordMatch) {
+      return res.status(401).json({ errorMessage: '비밀번호가 일치하지 않습니다.' });
+    }
+
+    const token = jwt.sign({ user_id }, jwtSecret, {
+      expiresIn: '24h',
+    });
+    res.status(200).json({ message: '로그인 성공 인증토큰 발행 완료', token: token });
+  } catch (error) {
+    res.status(500).json({ errorMessage: error.message });
+  }
+};
+
+accountRouter.post('/signUp', signUp);
+accountRouter.post('/login', login);
+
+export default accountRouter;

@@ -1,30 +1,31 @@
 import express from 'express';
 import { createServer } from 'http';
-import initSocket from './init/socket.js';
-import dotenv from 'dotenv';
-import { loadGameAssets } from '../server/init/assets.js';
-import UserRouter from './routes/user.router.js';
-
-dotenv.config();
+import cors from 'cors';
+// import initSocket from './init/socket.js';
+// import { loadGameAssets } from '../server/init/assets.js';
+import accountRouter from './routes/user.router.js';
+import configs from './util/config.js';
 
 const app = express();
 const server = createServer(app);
 
-const PORT = process.env.PORT_NUMBER;
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static('tower_defense_client'));
+app.use(cors());
 
-app.use('/api', [UserRouter]);
-initSocket(server);
+app.use('/', accountRouter);
+// initSocket(server);
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-loadGameAssets();
+// loadGameAssets();
 
-server.listen(PORT, async () => {
-  console.log(`${PORT} Server가 열렸습니다`);
+server.listen(configs.serverPort, async () => {
+  const address = server.address();
+  const host = address.address === '::' ? 'localhost' : address.address; // IPv6의 ::는 localhost를 의미함
+  const port = address.port;
+  console.log(`Server가 http://${host}:${port} 에서 열렸습니다`);
 });

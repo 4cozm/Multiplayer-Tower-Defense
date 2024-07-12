@@ -1,21 +1,20 @@
 import mysql from 'mysql2/promise';
-import { config } from '../config/config.js';
-import { formatDate } from '../utils/dateFormatter.js';
+import configs from '../util/config.js';
+import formatDate from '../util/dataFormatter.js';
+const { databases } = configs;
 
-const { databases } = config;
 
 const createPool = (dbConfig) => {
   const pool = mysql.createPool({
-    host: dbConfig.host,
-    port: dbConfig.port,
-    user: dbConfig.user,
-    password: dbConfig.password,
-    database: dbConfig.name,
+    host: dbConfig.dbHost,
+    port: dbConfig.dbPort,
+    user: dbConfig.dbUser,
+    password: dbConfig.dbPassword,
+    database: dbConfig.dbName,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
   });
-
   const originalQuery = pool.query;
 
   pool.query = (sql, params) => {
@@ -29,7 +28,7 @@ const createPool = (dbConfig) => {
 };
 
 const pools = {
-  USER_DB: createPool(databases.USER_DB),
+  USER_DB: createPool(databases),
 };
 
 export default pools;
