@@ -7,6 +7,10 @@ const configs = {
   serverPort: process.env.PORT,
   serverHost: process.env.HOST,
   jwtSecret: process.env.JWT_SECRET,
+  dbHost: process.env.DB_HOST,
+  dbUser: process.env.DB_USER,
+  dbPassword: process.env.DB_PASSWORD,
+  dbPort: process.env.DB_PORT,
 };
 
 export default configs;
