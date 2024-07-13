@@ -17,6 +17,26 @@
 //   return monsters[uuid].push({ level, attackPower });
 // };
 
+export const getLevel = (uuid) => {
+  // 조회
+  return monsters[uuid];
+};
+
+export const setLevel = (uuid, level) => {
+  // 삽입
+  return monsters[uuid].push({ level });
+};
+
+export const getSpawnMonster = (uuid) => {
+  // 조회
+  return monsters[uuid];
+};
+
+export const setSpawnMonster = (uuid, newMonsterID, level, monsterSpawnInterval, hp, power) => {
+  // 삽입
+  return monsters[uuid].push({ newMonsterID, level, monsterSpawnInterval, hp, power });
+};
+
 // export const getDieMonster = (uuid) => {
 //   return diedMonster[uuid];
 // };

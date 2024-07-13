@@ -2,7 +2,7 @@ import { Base } from './base.js';
 import { Monster } from './monster.js';
 import { Tower } from './tower.js';
 
-if (!localStorage.getItem('token')) {
+if (!localStorage.getItem('token2')) {
   alert('로그인이 필요합니다.');
   location.href = '/login';
 }
@@ -262,7 +262,7 @@ Promise.all([
 ]).then(() => {
   serverSocket = io('http://15.165.15.118:3000', {
     auth: {
-      token: localStorage.getItem('token'),
+      token: localStorage.getItem('token2'),
     },
   });
 
@@ -273,7 +273,7 @@ Promise.all([
     }
   });
 
-  serverSocket.on('connect', () => {
+  serverSocket.on('connection', (data) => {
     // TODO. 서버와 연결되면 대결 대기열 큐 진입
   });
 
