@@ -1,9 +1,19 @@
 const matchModel = [];
-
-export const addMatch = (uuid) => {
-  const player = { uuid };
+/**
+ * 유저를 매치 대기열에 push하는 기능
+ * @param {string} uuid 
+ * @param {socketId} socketId 
+ */
+export const addMatch = (uuid,socketId) => {
+  const player = { uuid,socketId };
 
   matchModel.push(player);
+  /*
+    player:{
+      uuid:hohoazumma
+      socketId:어쩌고 저쩌고
+    }
+   */
 };
 
 export const getMatchPlayers = () => {
