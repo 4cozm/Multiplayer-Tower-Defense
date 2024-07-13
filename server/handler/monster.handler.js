@@ -1,18 +1,22 @@
 import { getGameAssets } from '../init/assets.js'; // 임의로 작성
-import { getTower } from '../models/tower.model.js'; // 임의로 작성
-import { getUserById } from '../models/user.model.js';
+// import { getTower } from '../models/tower.model.js'; // 임의로 작성
+// import { getUserById } from '../models/user.model.js';
 import { setLevel, getLevel, setSpawnMonster } from '../models/monster.model.js';
 import { v4 as uuidv4 } from 'uuid';
 
 export const spawnMonster = (token, payload, socket, io) => {
+  // token: userId 전달 안됨
   const { levelsData } = getGameAssets();
-  const { level } = payload;
+  const { monsterLevel, opponent } = payload;
+  console.log('payload:', payload);
 
-  setLevel(token, level);
+  setLevel(token, monsterLevel);
 
   let currentLevels = getLevel(token);
+  console.log('currentLevels:', currentLevels);
   currentLevels.sort((a, b) => a.level - b.level);
   const currentLevel = currentLevels[currentLevels.length - 1].level;
+  console.log('currentLevel:', currentLevel);
   const levelData = levelsData.data.find((level) => level.id === currentLevel);
   if (levelData) {
     ({ monsterSpawnInterval, hp, power } = levelData);
@@ -31,16 +35,11 @@ export const spawnMonster = (token, payload, socket, io) => {
     monsterPower: power,
   });
 
-  const rooms = Array.from(socket.rooms).filter((room) => room !== socket.id);
-  if (rooms.length > 0) {
-    const roomId = rooms[0];
-
-    io.to(roomId).emit('opponentUpdateGameState', {
-      monsterSpawnInterval,
-      monsterHp: hp,
-      monsterPower: power,
-    });
-  }
+  io.to(opponent).emit('updateGameState', {
+    monsterSpawnInterval,
+    monsterHp: hp,
+    monsterPower: power,
+  });
 };
 
 // export const removeMonster = (userId, payload, socket) => {
