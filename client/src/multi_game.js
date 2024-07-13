@@ -288,6 +288,8 @@ Promise.all([
     // 상대가 매치되면 3초 뒤 게임 시작
     progressBarMessage.textContent = '게임이 3초 뒤에 시작됩니다.';
 
+    sendEvent(999, '멀티 게임 1번에서 보내는 메세지');
+
     console.log('서버로 부터 받은 init 데이터'); //테스트 코드
     console.log(data); //테스트 코드
 
