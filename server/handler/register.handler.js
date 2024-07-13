@@ -7,30 +7,23 @@ import CustomError from '../util/error/customError.js';
 import configs from '../util/config.js';
 
 const registerHandler = (io) => {
-  io.on('connection', (socket) => {
-    const token = socket.handshake.auth.token;
-    const jwtSecret = configs.jwtSecret;
-    if (!token) {
-      //토큰이 없으면 연결 종료
-      throw new CustomError('토큰이 존재하지 않습니다 로그인을 해 주세요', ErrorCodes.HAVE_NO_TOKEN);
-    }
-    jwt.verify(token, jwtSecret, (err, tokenPayload) => {
-      if (err) throw new CustomError('JWT 검증중 오류 발생', ErrorCodes.JWT_VERIFY_FAILED);
-      console.log('JWT 검증 성공');
-      socket.data = {
-        user_id: tokenPayload.user_id,
-      };
-    });
+  io.on('connection', async (socket) => {
+    console.log('클라이언트 연결됨', socket.id);
     const { init } = getGameAssets();
 
-    addUser(token, init, socket.id);
-    handleConnection(socket, token);
+    try {
+      await handleConnection(socket); // JWT 토큰 인증 완료 후 진행 이거 끝나야 나머지 코드가 작동
+      const userId = socket.data.userId;
+      addUser(userId, init, socket.id);
 
-    // socket과 userId 대체 사용
-    matchGame(socket, token, io);
+      matchGame(userId, socket, io);
+    } catch (error) {
+      console.error('연결 에러:', error.message);
+      socket.emit('connect_error', error);
+    }
 
     socket.on('event', (data) => handlerEvent(socket, data, io));
-    socket.on('disconnect', (socket) => handleDisconnect(socket, token));
+    socket.on('disconnect', () => handleDisconnect(socket)); //socket 객체를 직접 사용해야 함
   });
 };
 

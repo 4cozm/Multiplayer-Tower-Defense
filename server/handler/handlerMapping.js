@@ -1,13 +1,9 @@
-// import { initializeGameHandler } from './sync.handler.js';
-// import { removeMonster, damageMonster, monsterAttackBase } from './monster.handler.js';
-// import { attackTower, buyTower, initTower, refundTower, upgradeTower } from './tower.handler.js';
-// import { checkForBreak } from './base.handler.js';
-// import { gameEnd } from './game.handler.js';
+import { matchGame } from './match.handler.js';
 
-// const handlerMappings = {
-//   1: initializeGameHandler,
+const handlerMappings = {
+  1: matchGame,
 //   5: initTower,
-//   6: buyTower,
+//   6: buyTower, //사용중
 //   7: attackTower,
 //   8: refundTower,
 //   9: upgradeTower,
@@ -17,6 +13,6 @@
 //   15: checkForBreak,
 //   20: gameEnd,
 //   40: spawnMonster,
-// };
+};
 
-// export default handlerMappings;
+export default handlerMappings;

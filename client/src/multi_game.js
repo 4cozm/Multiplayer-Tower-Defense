@@ -267,7 +267,7 @@ Promise.all([
   new Promise((resolve) => (pathImage.onload = resolve)),
   ...monsterImages.map((img) => new Promise((resolve) => (img.onload = resolve))),
 ]).then(() => {
-  serverSocket = io('http://15.165.15.118:3000', {
+  serverSocket = io('http://127.0.0.1:5555', {
     auth: {
       token: localStorage.getItem('token'),
     },
@@ -287,6 +287,9 @@ Promise.all([
   serverSocket.on('matchFound', (data) => {
     // 상대가 매치되면 3초 뒤 게임 시작
     progressBarMessage.textContent = '게임이 3초 뒤에 시작됩니다.';
+
+    console.log('서버로 부터 받은 init 데이터'); //테스트 코드
+    console.log(data); //테스트 코드
 
     let progressValue = 0;
     const progressInterval = setInterval(() => {

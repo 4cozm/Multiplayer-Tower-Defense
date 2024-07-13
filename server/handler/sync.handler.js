@@ -1,4 +1,4 @@
-// import { getGameAssets } from '../init/assets.js';
+import { getGameAssets } from '../init/assets.js';
 // import { gameStart } from './game.handler.js';
 
 // const initializeGameHandler = (userId, socket) => {
