@@ -46,14 +46,14 @@ const signUp = async (req, res, next) => {
 const login = async (req, res) => {
   try {
     const jwtSecret = configs.jwtSecret;
-    const { user_id, password } = req.body;
+    const { userId, password } = req.body;
 
-    const exists = await findUserByID(user_id);
+    const exists = await findUserByID(userId);
     if (!exists) {
       return res.status(409).json({ errorMessage: '존재하지 않는 사용자 입니다.' });
     }
 
-    const hashedPassword = await getPasswordById(user_id);
+    const hashedPassword = await getPasswordById(userId);
     if (!hashedPassword) {
       return res.status(404).json({ errorMessage: '서버 DB 오류 : 저장된 비밀번호를 찾을 수 없습니다' });
     }
@@ -61,12 +61,13 @@ const login = async (req, res) => {
     if (!passwordMatch) {
       return res.status(401).json({ errorMessage: '비밀번호가 일치하지 않습니다.' });
     }
-
-    const token = jwt.sign({ user_id }, jwtSecret, {
+    const token = jwt.sign({ userId }, jwtSecret, {
+      //토큰에 담는 정보
       expiresIn: '24h',
     });
     res.status(200).json({ message: '로그인 성공 인증토큰 발행 완료', token: token });
   } catch (error) {
+    console.log('서버 에러 발생', error);
     res.status(500).json({ errorMessage: error.message });
   }
 };
