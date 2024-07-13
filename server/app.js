@@ -1,8 +1,8 @@
 import express from 'express';
 import { createServer } from 'http';
 import cors from 'cors';
-// import initSocket from './init/socket.js';
-// import { loadGameAssets } from '../server/init/assets.js';
+import initSocket from './init/socket.js';
+import { loadGameAssets } from '../server/init/assets.js';
 import accountRouter from './routes/user.router.js';
 import configs from './util/config.js';
 
@@ -11,17 +11,17 @@ const server = createServer(app);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static('tower_defense_client'));
+app.use(express.static('client'));
 app.use(cors());
 
 app.use('/', accountRouter);
-// initSocket(server);
+initSocket(server);
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-// loadGameAssets();
+loadGameAssets();
 
 server.listen(configs.serverPort, async () => {
   const address = server.address();

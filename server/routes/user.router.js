@@ -67,6 +67,7 @@ const login = async (req, res) => {
     });
     res.status(200).json({ message: '로그인 성공 인증토큰 발행 완료', token: token });
   } catch (error) {
+    console.error('로그인 오류', error);
     res.status(500).json({ errorMessage: error.message });
   }
 };

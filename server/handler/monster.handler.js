@@ -1,6 +1,6 @@
-import { getGameAssets } from '../init/assets.js'; // 임의로 작성
-import { getTower } from '../models/tower.model.js'; // 임의로 작성
-import { getUserById } from '../models/user.model.js';
+import { getGameAssets } from '../init/assets.js';
+// import { getTower } from '../models/tower.model.js';
+// import { getUserById } from '../models/user.model.js';
 import { setLevel, getLevel, setSpawnMonster } from '../models/monster.model.js';
 import { v4 as uuidv4 } from 'uuid';
 

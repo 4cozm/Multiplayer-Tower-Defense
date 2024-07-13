@@ -5,7 +5,9 @@ import { matchGame } from './match.handler.js';
 
 const registerHandler = (io) => {
   io.on('connection', (socket) => {
-    const token = socket.handshake.query.token;
+    const token = socket.handshake.auth.token;
+
+    console.log('Received token:', token);
 
     const { init } = getGameAssets();
 

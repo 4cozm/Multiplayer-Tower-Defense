@@ -1,7 +1,7 @@
 const matchModel = [];
 
-export const addMatch = (uuid) => {
-  const player = { uuid };
+export const addMatch = (uuid, socketId) => {
+  const player = { uuid, socketId };
 
   matchModel.push(player);
 };

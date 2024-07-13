@@ -52,6 +52,9 @@ let opponentBasePosition; // 상대방 기지 좌표
 const opponentMonsters = []; // 상대방 몬스터 목록
 const opponentTowers = []; // 상대방 타워 목록
 
+let currentRoom = null;
+let opponentSocketId = null;
+
 let isInitGame = false;
 
 // 이미지 로딩 파트
@@ -267,7 +270,7 @@ Promise.all([
   new Promise((resolve) => (pathImage.onload = resolve)),
   ...monsterImages.map((img) => new Promise((resolve) => (img.onload = resolve))),
 ]).then(() => {
-  serverSocket = io('http://15.165.15.118:3000', {
+  serverSocket = io('http://localhost:5555', {
     auth: {
       token: localStorage.getItem('token'),
     },
@@ -282,10 +285,15 @@ Promise.all([
 
   serverSocket.on('connection', (data) => {
     // TODO. 서버와 연결되면 대결 대기열 큐 진입
+    sendEvent(0, { payload: { userId: localStorage.getItem('userId') } });
   });
 
   serverSocket.on('matchFound', (data) => {
     // 상대가 매치되면 3초 뒤 게임 시작
+    const { roomName, players } = data;
+    currentRoom = roomName;
+    opponentSocketId = players.find((player) => player.socketId !== serverSocket.id).socketId;
+
     progressBarMessage.textContent = '게임이 3초 뒤에 시작됩니다.';
 
     let progressValue = 0;
@@ -350,6 +358,8 @@ const sendEvent = (handlerId, payload) => {
   serverSocket.emit('event', {
     userId: localStorage.getItem('user_Id'),
     clientVersion: CLIENT_VERSION,
+    room: currentRoom,
+    opponentSocketId: opponentSocketId,
     handlerId,
     payload,
   });
