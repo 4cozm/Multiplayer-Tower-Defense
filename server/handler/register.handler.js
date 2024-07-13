@@ -13,7 +13,7 @@ const registerHandler = (io) => {
     handleConnection(socket, token);
 
     // socket과 userId 대체 사용
-    matchGame(socket, token);
+    matchGame(socket, token, io);
 
     socket.on('event', (data) => handlerEvent(socket, data, io));
     socket.on('disconnect', (socket) => handleDisconnect(socket, token));
