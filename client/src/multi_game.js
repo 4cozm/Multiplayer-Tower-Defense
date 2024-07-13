@@ -284,11 +284,17 @@ Promise.all([
     // TODO. 서버와 연결되면 대결 대기열 큐 진입
   });
 
+  serverSocket.on('TEST', (data) => {
+    console.log('상대방 측에서 뭔가를 보냈다');
+    console.log(data);
+  });
+
   serverSocket.on('matchFound', (data) => {
     // 상대가 매치되면 3초 뒤 게임 시작
     progressBarMessage.textContent = '게임이 3초 뒤에 시작됩니다.';
 
-    sendEvent(999, '멀티 게임 1번에서 보내는 메세지');
+    const testMessage = `반가워요 ${data.opponentName}님`;
+    sendEvent(999, { testMessage, opponent:data.opponent });
 
     console.log('서버로 부터 받은 init 데이터'); //테스트 코드
     console.log(data); //테스트 코드
@@ -353,7 +359,7 @@ Promise.all([
 
 const sendEvent = (handlerId, payload) => {
   serverSocket.emit('event', {
-    userId: localStorage.getItem('user_Id'),
+    userId: localStorage.getItem('user_Id'), //여기에는 유저 아이디가 없음 / init코드 구현 이후에 생성된 유저 ID를 보낼 수 있도록 해야함
     clientVersion: CLIENT_VERSION,
     handlerId,
     payload,

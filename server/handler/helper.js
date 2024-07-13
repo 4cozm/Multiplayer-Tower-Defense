@@ -1,4 +1,4 @@
-// import { CLIENT_VERSION } from '../constants.js';
+import { CLIENT_VERSION } from '../constants.js';
 import { deletePlayerFromMatchModel } from '../models/match.model.js';
 import { removeUser } from '../models/user.model.js';
 import handlerMappings from './handlerMapping.js';
@@ -11,7 +11,8 @@ export const handleDisconnect = (socket) => {
   removeUser(socket.id); //소켓에서 삭제
 };
 
-export const handleConnection = (socket) => { //비동기로 실행 시켜서 로그인이 완전히 끝나야 다른 작업이 시작되도록 함
+export const handleConnection = (socket) => {
+  //비동기로 실행 시켜서 로그인이 완전히 끝나야 다른 작업이 시작되도록 함
   return new Promise((resolve, reject) => {
     // 토큰 추출: WebSocket 쿼리 파라미터에서 토큰을 가져옵니다.
     const token = socket.handshake.auth.token;
@@ -37,6 +38,7 @@ export const handleConnection = (socket) => { //비동기로 실행 시켜서 �
 };
 
 export const handlerEvent = (socket, data, io) => {
+  console.log(data);
   if (!CLIENT_VERSION.includes(data.clientVersion)) {
     socket.emit('response', { status: 'fail', message: 'Client version mismatch!' });
     return;
@@ -50,6 +52,6 @@ export const handlerEvent = (socket, data, io) => {
 
   const response = handler(data.userId, data.payload, socket, io);
 
-  // 유저 한명에게만 보내는 정보
+  // 유저 한명에게만 보내는 정보 이후에 들어온 socketid로 상대방 데이터를 보내는 코드도 필요함
   socket.emit('response', response);
 };
