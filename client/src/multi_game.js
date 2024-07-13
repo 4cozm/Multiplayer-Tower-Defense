@@ -40,6 +40,10 @@ const towers = []; // 유저 타워 목록
 let score = 0; // 게임 점수
 let highScore = 0; // 기존 최고 점수
 
+let monsterID = 0;
+let monsterHp = 0;
+let monsterPower = 0;
+
 // 상대 데이터
 let opponentBase; // 상대방 기지 객체
 let opponentMonsterPath; // 상대방 몬스터 경로
@@ -167,10 +171,10 @@ function placeBase(position, isPlayer) {
 }
 
 function spawnMonster() {
-  const newMonster = new Monster(monsterPath, monsterImages, monsterLevel);
-  monsters.push(newMonster);
+  sendEvent(40, { payload: { monsterLevel } }); // TODO. 서버로 몬스터 생성 이벤트 전송
 
-  // TODO. 서버로 몬스터 생성 이벤트 전송
+  const newMonster = new Monster(monsterPath, monsterImages, monsterLevel, monsterID, monsterHp, monsterPower);
+  monsters.push(newMonster);
 }
 
 function gameLoop() {
@@ -307,6 +311,14 @@ Promise.all([
     }, 300);
   });
 
+  serverSocket.on('updateGameState', (syncData) => {
+    updateGameState(syncData);
+  });
+
+  serverSocket.on('opponentUpdateGameState', (syncData) => {
+    opponentUpdateGameState(syncData);
+  });
+
   serverSocket.on('gameOver', (data) => {
     bgm.pause();
     const { isWin } = data;
@@ -356,3 +368,22 @@ buyTowerButton.style.display = 'none';
 buyTowerButton.addEventListener('click', placeNewTower);
 
 document.body.appendChild(buyTowerButton);
+
+const updateGameState = (syncData) => {
+  userGold = syncData.userGold !== undefined ? syncData.userGold : userGold;
+  baseHp = syncData.baseHp !== undefined ? syncData.baseHp : baseHp;
+  score = syncData.score !== undefined ? syncData.score : score;
+  monsterLevel = syncData.monsterLevel !== undefined ? syncData.monsterLevel : monsterLevel;
+  monsterID = syncData.monsterID !== undefined ? syncData.monsterID : monsterID;
+  monsterSpawnInterval =
+    syncData.monsterSpawnInterval !== undefined ? syncData.monsterSpawnInterval : monsterSpawnInterval;
+  monsterHp = syncData.monsterHp !== undefined ? syncData.monsterHp : monsterHp;
+  monsterPower = syncData.monsterPower !== undefined ? syncData.monsterPower : monsterPower;
+};
+
+// const opponentUpdateGameState = (syncData) => {
+//   userGold = syncData.userGold !== undefined ? syncData.userGold : userGold;
+//   baseHp = syncData.baseHp !== undefined ? syncData.baseHp : baseHp;
+//   score = syncData.score !== undefined ? syncData.score : score;
+//   monsterLevel = syncData.monsterLevel !== undefined ? syncData.monsterLevel : monsterLevel;
+// };

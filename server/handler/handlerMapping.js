@@ -16,6 +16,7 @@
 //   14: monsterAttackBase,
 //   15: checkForBreak,
 //   20: gameEnd,
+//   40: spawnMonster,
 // };
 
 // export default handlerMappings;

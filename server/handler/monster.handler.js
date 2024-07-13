@@ -1,7 +1,47 @@
-// import { getGameAssets } from '../init/assets.js'; // 임의로 작성
-// import { getTower } from '../models/tower.model.js'; // 임의로 작성
-// import { getUserById } from '../models/user.model.js';
-// import { getMonster, setMonster, setDieMonster } from '../models/monster.model.js';
+import { getGameAssets } from '../init/assets.js'; // 임의로 작성
+import { getTower } from '../models/tower.model.js'; // 임의로 작성
+import { getUserById } from '../models/user.model.js';
+import { setLevel, getLevel, setSpawnMonster } from '../models/monster.model.js';
+import { v4 as uuidv4 } from 'uuid';
+
+export const spawnMonster = (token, payload, socket, io) => {
+  const { levelsData } = getGameAssets();
+  const { level } = payload;
+
+  setLevel(token, level);
+
+  let currentLevels = getLevel(token);
+  currentLevels.sort((a, b) => a.level - b.level);
+  const currentLevel = currentLevels[currentLevels.length - 1].level;
+  const levelData = levelsData.data.find((level) => level.id === currentLevel);
+  if (levelData) {
+    ({ monsterSpawnInterval, hp, power } = levelData);
+  } else {
+    throw new Error('해당 레벨을 찾을 수 없습니다.');
+  }
+
+  const newMonsterID = uuidv4();
+
+  setSpawnMonster(token, newMonsterID, level, monsterSpawnInterval, hp, power);
+
+  socket.emit('updateGameState', {
+    monsterID: newMonsterID,
+    monsterSpawnInterval,
+    monsterHp: hp,
+    monsterPower: power,
+  });
+
+  const rooms = Array.from(socket.rooms).filter((room) => room !== socket.id);
+  if (rooms.length > 0) {
+    const roomId = rooms[0];
+
+    io.to(roomId).emit('opponentUpdateGameState', {
+      monsterSpawnInterval,
+      monsterHp: hp,
+      monsterPower: power,
+    });
+  }
+};
 
 // export const removeMonster = (userId, payload, socket) => {
 //   if (payload.hp > 0) {
