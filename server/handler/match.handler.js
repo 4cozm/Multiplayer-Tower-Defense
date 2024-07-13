@@ -1,4 +1,5 @@
 import { addMatch, getMatchPlayers, clearMatchPlayers } from '../models/match.model.js';
+import initialData from './init.handler.js';
 
 export const matchGame = async (userId, socket, io) => {
   const MatchArray = addMatch(userId, socket.id);

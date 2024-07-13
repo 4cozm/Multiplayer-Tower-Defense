@@ -11,7 +11,8 @@ export const handleDisconnect = (socket) => {
   removeUser(socket.id); //소켓에서 삭제
 };
 
-export const handleConnection = (socket) => { //비동기로 실행 시켜서 로그인이 완전히 끝나야 다른 작업이 시작되도록 함
+export const handleConnection = (socket) => {
+  //비동기로 실행 시켜서 로그인이 완전히 끝나야 다른 작업이 시작되도록 함
   return new Promise((resolve, reject) => {
     // 토큰 추출: WebSocket 쿼리 파라미터에서 토큰을 가져옵니다.
     const token = socket.handshake.auth.token;
@@ -37,10 +38,10 @@ export const handleConnection = (socket) => { //비동기로 실행 시켜서 �
 };
 
 export const handlerEvent = (socket, data, io) => {
-  if (!CLIENT_VERSION.includes(data.clientVersion)) {
-    socket.emit('response', { status: 'fail', message: 'Client version mismatch!' });
-    return;
-  }
+  // if (!CLIENT_VERSION.includes(data.clientVersion)) {
+  //   socket.emit('response', { status: 'fail', message: 'Client version mismatch!' });
+  //   return;
+  // }
 
   const handler = handlerMappings[data.handlerId];
   if (!handler) {
