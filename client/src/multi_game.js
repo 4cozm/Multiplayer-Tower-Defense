@@ -23,6 +23,11 @@ const progressBar = document.getElementById('progressBar');
 const loader = document.getElementsByClassName('loader')[0];
 
 const NUM_OF_MONSTERS = 5; // 몬스터 개수
+// 멀티 플레이 데이터
+let roomName; //방 이름
+let opponentSocketID; //상대방의 소켓ID
+let opponentName; // 상대방 닉네임
+
 // 게임 데이터
 let towerCost = 0; // 타워 구입 비용
 let monsterSpawnInterval = 0; // 몬스터 생성 주기
@@ -155,9 +160,9 @@ function placeNewTower() {
   }
 
   const { x, y } = getRandomPositionNearPath(200);
-  const tower = new Tower(x, y);
-  towers.push(tower);
-  tower.draw(ctx, towerImage);
+
+  //서버로 포탑 좌표 전달
+  sendEvent(6, { x, y });
 }
 
 function placeBase(position, isPlayer) {
@@ -293,8 +298,8 @@ Promise.all([
     // 상대가 매치되면 3초 뒤 게임 시작
     progressBarMessage.textContent = '게임이 3초 뒤에 시작됩니다.';
 
-    const testMessage = `반가워요 ${data.opponentName}님`;
-    sendEvent(999, { testMessage, opponent:data.opponent });
+    const testMessage = `반가워요 ${data.opponentName}님`; //테스트 코드
+    sendEvent(999, { testMessage, opponent: data.opponent }); //테스트 코드
 
     console.log('서버로 부터 받은 init 데이터'); //테스트 코드
     console.log(data); //테스트 코드
@@ -316,6 +321,11 @@ Promise.all([
 
         // TODO. 유저 및 상대방 유저 데이터 초기화
         if (!isInitGame) {
+          //멀티 플레이 데이터
+          roomName = data.roomName;
+          opponentSocketID = data.opponentSocketID;
+          opponentName = data.opponentName;
+          // 다음 초기화 데이터
           initGame();
         }
       }
@@ -351,18 +361,46 @@ Promise.all([
       });
     }
   });
+  serverSocket.on('makeTower', (data) => {
+    const { x, y, uuid } = data;
+    const tower = new Tower(x, y, uuid);
+    towers.push(tower);
+    tower.draw(ctx, towerImage);
+
+    //모달 알림 : 타워 구매에 성공했습니다.
+  });
+  serverSocket.on('opponentMakeTower', (data) => {
+    const { x, y, uuid } = data;
+    const tower = new Tower(x, y, uuid);
+    opponentTowers.push(tower);
+    tower.draw(ctx, towerImage);
+  });
 
   serverSocket.on('error', (errorResponse) => {
     console.log('Received error:', errorResponse);
   });
 });
 
+/**
+ * 1:matchGame :
+ * 6:buyTower : 타워의 x,y 좌표
+ *
+ *
+ *
+ *
+ * 999:connectionTest
+ */
 const sendEvent = (handlerId, payload) => {
   serverSocket.emit('event', {
     userId: localStorage.getItem('user_Id'), //여기에는 유저 아이디가 없음 / init코드 구현 이후에 생성된 유저 ID를 보낼 수 있도록 해야함
     clientVersion: CLIENT_VERSION,
     handlerId,
-    payload,
+    payload: {
+      ...payload,
+      roomName,
+      opponentSocketID,
+      opponentName,
+    },
   });
 };
 

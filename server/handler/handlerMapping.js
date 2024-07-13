@@ -2,9 +2,9 @@ import { matchGame } from './match.handler.js';
 import connectionTest from './test.handler.js';
 
 const handlerMappings = {
-  1: matchGame,
+  // 1: matchGame,
   //   5: initTower,
-  //   6: buyTower, //사용중
+  6: buyTower,
   //   7: attackTower,
   //   8: refundTower,
   //   9: upgradeTower,
