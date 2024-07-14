@@ -1,7 +1,8 @@
 import { matchGame } from './match.handler.js';
-import connectionTest from './test.handler.js';
 import initialData from './init.handler.js';
 import { spawnMonster } from './monster.handler.js';
+import {buyTower} from "./tower.handler.js";
+
 
 const handlerMappings = {
   1: matchGame, //현재는 안쓰는중
@@ -17,7 +18,6 @@ const handlerMappings = {
   //   15: checkForBreak,
   //   20: gameEnd,
   40: spawnMonster,
-  999: connectionTest,
 };
 
 export default handlerMappings;

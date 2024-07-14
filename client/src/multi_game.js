@@ -23,10 +23,6 @@ const progressBar = document.getElementById('progressBar');
 const loader = document.getElementsByClassName('loader')[0];
 
 const NUM_OF_MONSTERS = 5; // 몬스터 개수
-// 멀티 플레이 데이터
-let roomName; //방 이름
-let opponentSocketID; //상대방의 소켓ID
-let opponentName; // 상대방 닉네임
 
 // 게임 데이터
 let towerCost = 0; // 타워 구입 비용
@@ -407,12 +403,7 @@ const sendEvent = (handlerId, payload) => {
     userId: userId,
     clientVersion: CLIENT_VERSION,
     handlerId,
-    payload: {
-      ...payload,
-      roomName,
-      opponentSocketID,
-      opponentName,
-    },
+    payload,
   });
 };
 

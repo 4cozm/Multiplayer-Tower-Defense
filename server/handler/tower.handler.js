@@ -2,6 +2,7 @@ import { getGameAssets } from '../init/assets.js'; // 임의로 작성
 import { getTower, setAttackTower, setRefundTower, setTower } from '../models/tower.model.js';
 import { getUserById } from '../models/user.model.js';
 import { v4 } from 'uuid';
+import findOpponent from '../util/find.opponent.js';
 
 export const buyTower = (userId, payload, socket, io) => {
   //타워의 가격 비교
@@ -27,7 +28,7 @@ export const buyTower = (userId, payload, socket, io) => {
     y,
     uuid,
   });
-  io.to(payload.opponent).emit('opponentMakeTower', {
+  io.to(findOpponent(socket)).emit('opponentMakeTower', {
     //적에게 타워 생성 데이터 보냄
     x,
     y,
