@@ -11,11 +11,12 @@ if (!localStorage.getItem('token')) {
 
 export let game; // 핸들러의 index.js에서 사용하기 위해 export함
 let serverSocket;
+let init = false; //inital 데이터가 커서 재전송 받는 문제가 있는듯 하여 생성
 
 const CLIENT_VERSION = '1.0.0';
 
 const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
+export const ctx = canvas.getContext('2d');
 
 const opponentCanvas = document.getElementById('opponentCanvas');
 const opponentCtx = opponentCanvas.getContext('2d');
@@ -31,7 +32,7 @@ const NUM_OF_MONSTERS = 5; // 몬스터 개수
 const backgroundImage = new Image();
 backgroundImage.src = 'images/bg.webp';
 
-const towerImage = new Image();
+export const towerImage = new Image();
 towerImage.src = 'images/tower.png';
 
 const baseImage = new Image();
@@ -94,11 +95,11 @@ function drawRotatedImage(image, x, y, width, height, angle, context) {
 }
 
 function getRandomPositionNearPath(maxDistance) {
-  const segmentIndex = Math.floor(Math.random() * (monsterPath.length - 1));
-  const startX = monsterPath[segmentIndex].x;
-  const startY = monsterPath[segmentIndex].y;
-  const endX = monsterPath[segmentIndex + 1].x;
-  const endY = monsterPath[segmentIndex + 1].y;
+  const segmentIndex = Math.floor(Math.random() * (game.monsterPath.length - 1));
+  const startX = game.monsterPath[segmentIndex].x;
+  const startY = game.monsterPath[segmentIndex].y;
+  const endX = game.monsterPath[segmentIndex + 1].x;
+  const endY = game.monsterPath[segmentIndex + 1].y;
 
   const t = Math.random();
   const posX = startX + t * (endX - startX);
@@ -123,7 +124,7 @@ function placeInitialTowers(initialTowerCoords, initialTowers, context) {
 
 function placeNewTower() {
   // 타워를 구입할 수 있는 자원이 있을 때 타워 구입 후 랜덤 배치
-  if (userGold < towerCost) {
+  if (game.userGold < game.towerCost) {
     alert('골드가 부족합니다.');
     return;
   }
@@ -282,11 +283,11 @@ Promise.all([
 
         // TODO. 유저 및 상대방 유저 데이터 초기화
         sendEvent(10); // 유저 및 상대방 유저 데이터 요청 initializeGameState
-
         if (!game.isInitGame) {
           serverSocket.on('initializeGameState', (initialGameData) => {
             eventHandler.initializeGameState(initialGameData);
-            console.log('게임 초기화 데이터:', game);
+
+            console.log('게임 초기화 데이터:', game, '출력시간', Date.now());
             initGame();
           });
         }
@@ -323,21 +324,16 @@ Promise.all([
       });
     }
   });
-  serverSocket.on('makeTower', (data) => {
-    const { x, y, uuid } = data;
-    const tower = new Tower(x, y, uuid);
-    towers.push(tower);
-    tower.draw(ctx, towerImage);
 
-    //모달 알림 : 타워 구매에 성공했습니다.
+  //타워 구입 이벤트
+  serverSocket.on('makeTower', (data) => {
+    eventHandler.makeTower(data);
   });
   serverSocket.on('opponentMakeTower', (data) => {
-    const { x, y, uuid } = data;
-    const tower = new Tower(x, y, uuid);
-    opponentTowers.push(tower);
-    tower.draw(ctx, towerImage);
+    eventHandler.makeOpponentTower(data);
   });
 
+  //에러 이벤트
   serverSocket.on('error', (errorResponse) => {
     console.log('Received error:', errorResponse);
   });
