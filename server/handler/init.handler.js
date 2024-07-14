@@ -1,7 +1,8 @@
 import { getGameAssets } from '../init/assets.js';
+import findOpponent from '../util/find.opponent.js';
 
 export const initialData = (userId, payload, socket, io) => {
-  const { opponent } = payload;
+  const opponent = findOpponent(socket);
 
   function generateRandomMonsterPath() {
     const path = [];

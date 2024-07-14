@@ -174,7 +174,7 @@ function placeBase(position, isPlayer) {
 }
 
 function spawnMonster() {
-  sendEvent(40, { payload: { monsterLevel, opponent } }); // TODO. 서버로 몬스터 생성 이벤트 전송
+  //sendEvent(40, { payload: { monsterLevel, opponent } }); // TODO. 서버로 몬스터 생성 이벤트 전송
 
   const newMonster = new Monster(monsterPath, monsterImages, monsterLevel, monsterID, monsterHp, monsterPower);
   monsters.push(newMonster);
@@ -314,7 +314,7 @@ Promise.all([
         opponentCanvas.style.display = 'block';
 
         // TODO. 유저 및 상대방 유저 데이터 초기화
-        sendEvent(10, { userId: localStorage.getItem('userId'), payload: opponent });
+        sendEvent(10);
 
         const initializeGameState = (initialGameData) => {
           monsterPath = initialGameData.monsterPath;
