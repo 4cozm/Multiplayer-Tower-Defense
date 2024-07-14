@@ -4,7 +4,7 @@ import registerHandler from '../handler/register.handler.js';
 const initSocket = (server) => {
   const io = new SocketIO(server, {
     cors: {
-      origin: ['http://localhost:5555', 'http://127.0.0.1:5555', 'http://localhost:5500', 'http://127.0.0.1:5500'], // 도메인 허용 나중에 서버 올릴때 제거해야함
+      origin: ['http://localhost:5555', 'http://127.0.0.1:5555', 'http://localhost:5500', 'http://127.0.0.1:5500'], // 도메인 허용
       methods: ['GET', 'POST'], // 허용할 HTTP 메서드
       credentials: true, // 자격 증명 허용
     },
