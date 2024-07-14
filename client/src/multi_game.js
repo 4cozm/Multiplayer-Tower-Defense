@@ -195,8 +195,13 @@ function gameLoop() {
       const Attacked = monster.move();
       if (Attacked) {
         const attackedSound = new Audio('sounds/attacked.wav');
-        attackedSound.volume = 0.3;
+        attackedSound.volume = 0.1;
         attackedSound.play();
+
+        if (game.baseHp <= 0) {
+          sendEvent(20, { isWin: false });
+        }
+
         // TODO. 몬스터가 기지를 공격했을 때 서버로 이벤트 전송
         game.monsters.splice(i, 1);
       }
@@ -308,8 +313,9 @@ Promise.all([
     const { isWin } = data;
     const winSound = new Audio('sounds/win.wav');
     const loseSound = new Audio('sounds/lose.wav');
-    winSound.volume = 0.3;
-    loseSound.volume = 0.3;
+    winSound.volume = 0.01;
+    loseSound.volume = 0.1;
+
     if (isWin) {
       winSound.play().then(() => {
         alert('당신이 게임에서 승리했습니다!');
