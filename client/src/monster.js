@@ -1,5 +1,5 @@
 export class Monster {
-  constructor(path, monsterImages, level, monsterID, maxHp, attackPower) {
+  constructor(path, monsterImages, level, monsterID, maxHp, attackPower, monsterNumber = null) {
     // 생성자 안에서 몬스터의 속성을 정의한다고 생각하시면 됩니다!
     if (!path || path.length <= 0) {
       throw new Error('몬스터가 이동할 경로가 필요합니다.');

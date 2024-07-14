@@ -1,4 +1,4 @@
-// const monsters = {};
+const monsters = {};
 // const diedMonster = {};
 
 // export const createMonster = (uuid) => {
@@ -24,7 +24,11 @@ export const getLevel = (uuid) => {
 
 export const setLevel = (uuid, level) => {
   // 삽입
-  return monsters[uuid].push({ level });
+  if (!monsters[uuid]) {
+    monsters[uuid] = [];
+  }
+  monsters[uuid].push({ level });
+  console.log('Updated monsters:', monsters);
 };
 
 export const getSpawnMonster = (uuid) => {
@@ -34,7 +38,10 @@ export const getSpawnMonster = (uuid) => {
 
 export const setSpawnMonster = (uuid, newMonsterID, level, monsterSpawnInterval, hp, power) => {
   // 삽입
-  return monsters[uuid].push({ newMonsterID, level, monsterSpawnInterval, hp, power });
+  if (!monsters[uuid]) {
+    monsters[uuid] = [];
+  }
+  monsters[uuid].push({ newMonsterID, level, monsterSpawnInterval, hp, power });
 };
 
 // export const getDieMonster = (uuid) => {
