@@ -6,7 +6,7 @@ import eventHandler from './handlers/index.js';
 
 if (!localStorage.getItem('token')) {
   alert('로그인이 필요합니다.');
-  location.href = '/login';
+  location.href = '/login.html';
 }
 
 export let game; // 핸들러의 index.js에서 사용하기 위해 export함
@@ -41,7 +41,7 @@ baseImage.src = 'images/base.png';
 const pathImage = new Image();
 pathImage.src = 'images/path.png';
 
-const monsterImages = [];
+export const monsterImages = [];
 for (let i = 1; i <= NUM_OF_MONSTERS; i++) {
   const img = new Image();
   img.src = `images/monster${i}.png`;
@@ -146,20 +146,8 @@ function placeBase(position, isPlayer) {
 }
 
 function spawnMonster() {
-  const newMonster = new Monster(
-    game.monsterPath,
-    monsterImages,
-    game.monsterLevel,
-    game.monsterID,
-    game.monsterHp,
-    game.monsterPower,
-  );
-
-  sendEvent(40, { monsterLevel: game.monsterLevel }); // TODO. 서버로 몬스터 생성 이벤트 전송
-
-  game.monsters.push(newMonster);
-
-  console.log('몬스터 생성:', newMonster);
+  // TODO. 서버로 몬스터 생성 이벤트 전송
+  sendEvent(40);
 }
 
 function gameLoop() {
@@ -187,6 +175,10 @@ function gameLoop() {
         tower.attack(monster);
       }
     });
+  });
+  game.monsters.forEach((monster) => {
+    //이 코드가 사라져 있었음 범인 누구임... 원래 부터 없었을 수도 있고
+    monster.draw(ctx, false);
   });
 
   // 몬스터가 공격을 했을 수 있으므로 기지 다시 그리기
@@ -241,7 +233,6 @@ function initGame() {
 
   setInterval(spawnMonster, game.monsterSpawnInterval); // 설정된 몬스터 생성 주기마다 몬스터 생성
   gameLoop(); // 게임 루프 최초 실행
-  console.log('게임 초기화 완료');
   game.isInitGame = true;
 }
 
@@ -261,8 +252,9 @@ Promise.all([
   serverSocket.on('connect_error', (err) => {
     if (err.message === 'Authentication error') {
       alert('잘못된 토큰입니다.');
-      location.href = '/login';
+      location.href = '/login.html';
     }
+    console.log(err);
   });
 
   serverSocket.on('matchFound', (data) => {
@@ -290,7 +282,7 @@ Promise.all([
         if (!game.isInitGame) {
           serverSocket.on('initializeGameState', (initialGameData) => {
             eventHandler.initializeGameState(initialGameData);
-
+            console.log(monsterImages);
             console.log('게임 초기화 데이터:', game, '출력시간', Date.now()); //현재 클라이언트에서 이벤트 두번 받아오는 문제 있음
             initGame();
           });
@@ -300,9 +292,7 @@ Promise.all([
   });
   serverSocket.on('updateGameState', (syncData) => {
     console.log('Received sync data:', syncData);
-    if (syncData) {
-      eventHandler.updateGameState(syncData);
-    }
+    eventHandler.updateGameState(syncData);
   });
 
   // serverSocket.on('opponentUpdateGameState', (syncData) => { 상대방 변경사항
@@ -337,6 +327,13 @@ Promise.all([
   });
   serverSocket.on('opponentMakeTower', (data) => {
     eventHandler.makeOpponentTower(data);
+  });
+  //몬스터 스폰 이벤트
+  serverSocket.on('spawnMonster', (data) => {
+    eventHandler.spawnMonster(data);
+  });
+  serverSocket.on('opponentSpawnMonster', (data) => {
+    eventHandler.opponentSpawnMonster(data);
   });
 
   //에러 이벤트

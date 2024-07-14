@@ -2,6 +2,8 @@ import { game } from '../multi_game.js';
 import initializeGameState from './init/init.handler.js';
 import updateGameState from './user/updateGameState.handler.js';
 import { makeTower, makeOpponentTower } from './tower/createTower.handler.js';
+import { spawnMonster,opponentSpawnMonster } from './monster/monster.handler.js';
+
 
 const addGame = (handler) => {
   return (...args) => {
@@ -14,6 +16,8 @@ const eventHandler = {
   updateGameState: addGame(updateGameState),
   makeTower: addGame(makeTower),
   makeOpponentTower: addGame(makeOpponentTower),
+  spawnMonster,
+  opponentSpawnMonster,
 };
 
 export default eventHandler;

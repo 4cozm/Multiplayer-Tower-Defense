@@ -1,48 +1,34 @@
 import { getGameAssets } from '../init/assets.js';
 // import { getTower } from '../models/tower.model.js';
 // import { getUserById } from '../models/user.model.js';
-import { setLevel, getLevel, setSpawnMonster } from '../models/monster.model.js';
+import { setLevel, addMonster } from '../models/monster.model.js';
 import { v4 as uuidv4 } from 'uuid';
 import findOpponent from '../util/find.opponent.js';
+import { getUserById } from '../models/user.model.js';
 
 export const spawnMonster = (userId, payload, socket, io) => {
-  console.log('spawnMonster');
   const opponent = findOpponent(socket);
-
+  const user = getUserById(userId); //스테이지 정보를 갱신하기 위해 유저의 정보를 가져옴
   const { levelsData } = getGameAssets();
-  const { monsterLevel } = payload;
 
-  setLevel(userId, monsterLevel);
+  const stage = user.stage; // 유저의 현재 스테이지 == 몬스터 레벨
+  //setLevel(userId, monsterLevel); <- 이건 왜 필요한지 궁금해요
 
-  let currentLevels = getLevel(userId);
-  currentLevels.sort((a, b) => a.level - b.level);
-  const currentLevel = currentLevels[currentLevels.length - 1].level;
-  const levelData = levelsData.data.find((level) => level.id === currentLevel);
+  const levelData = levelsData.data.find((data) => data.stage === stage);
+  // hp,power 두개의 값만 가져옴, 원한다면 speed 같은것도 추가 가능합니다!
 
-  let monsterSpawnInterval, hp, power;
-  if (levelData) {
-    ({ monsterSpawnInterval, hp, power } = levelData);
-  } else {
+  if (!levelData) {
     throw new Error('해당 레벨을 찾을 수 없습니다.');
+    //레벨이 끝까지 도달했을때는 항상 오류가 발생하니,마지막 레벨 몬스터를 스폰하도록 해야할 것 같아요
   }
+  const { level: monsterLevel, hp: monsterHp, power: monsterPower } = levelData; //서버측과 동일한 이름으로 쓰기 위해서 변경
+  const monsterID = uuidv4();
 
-  const newMonsterID = uuidv4();
+  addMonster(userId, monsterID, monsterHp, monsterPower); //배열에 추가
 
-  setSpawnMonster(userId, newMonsterID, monsterLevel, monsterSpawnInterval, hp, power);
-
-  socket.emit('updateGameState', {
-    monsterID: newMonsterID,
-    monsterSpawnInterval,
-    monsterHp: hp,
-    monsterPower: power,
-  });
-
-  io.to(opponent).emit('updateGameState', {
-    monsterSpawnInterval,
-    monsterHp: hp,
-    monsterPower: power,
-  });
-  console.log('spawnMonster end');
+  //보내야 할 정보는 레벨,몬스터고유 번호,체력,공격력 입니다
+  socket.emit('spawnMonster', { monsterLevel, monsterID, monsterHp, monsterPower });
+  io.to(opponent).emit('opponentSpawnMonster', { monsterLevel, monsterID, monsterHp, monsterPower });
 };
 
 // export const removeMonster = (userId, payload, socket) => {
