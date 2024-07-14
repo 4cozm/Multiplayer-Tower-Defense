@@ -1,168 +1,168 @@
-// import { getGameAssets } from '../init/assets.js'; // 임의로 작성
-// import { getTower, setAttackTower, setRefundTower, setTower } from '../models/tower.model.js';
-// import { getUserById } from '../models/user.model.js';
+import { getGameAssets } from '../init/assets.js'; // 임의로 작성
+import { getTower, setAttackTower, setRefundTower, setTower } from '../models/tower.model.js';
+import { getUserById } from '../models/user.model.js';
+import { v4 } from 'uuid';
+import findOpponent from '../util/find.opponent.js';
 
-// // 타워 초기 세팅 값
-// // 후에 asset의 저장되어있는 값으로 바뀔 수 있음
-// const numOfInitialTowers = 3;
+export const buyTower = (userId, payload, socket, io) => {
+  //타워의 가격 비교
+  const { x, y } = payload;
 
-// //초기 타워 세팅 이벤트
-// export const initTower = (userId, payload) => {
-//   //타워의 갯수가 기존 Initial tower의 갯수보다 많은지 체크
-//   if (numOfInitialTowers < payload.towersnum) {
-//     return { status: 'fail', message: 'The initial number of towers was exceeded.' };
-//   }
-//   const serverTime = Date.now(); // 현재 타임스탬프
-//   //타워의 데이터 저장
-//   setTower(userId, payload.towerId, 1, payload.position, serverTime);
-//   return { status: 'success', message: '타워 배치 완료' };
-// };
+  const serverTime = Date.now(); // 현재 타임스탬프
 
-// export const buyTower = (userId, payload, socket) => {
-//   //타워의 가격 비교
-//   if (payload.userGold < payload.towerCost) {
-//     return { status: 'fail', message: 'There is little gold.' };
-//   }
+  const userGameState = getUserById(userId);
 
-//   const serverTime = Date.now(); // 현재 타임스탬프
+  if (userGameState.userGold < userGameState.towerCost) {
+    socket.emit('error', '돈이 부족합니다');
+    return { status: 'failed', message: '타워 구매 실패' };
+  }
 
-//   const userGameState = getUserById(userId);
+  userGameState.userGold -= userGameState.towerCost;
+  const uuid = v4(); //uuid 생성문인데, 인자로 전달하는 값의 변수를 uuid로 하기 위해 그냥 이렇게 함..
+  // 업데이트된 게임 상태를 클라이언트에 전송
+  socket.emit('updateGameState', {
+    userGold: userGameState.userGold,
+  });
+  socket.emit('makeTower', {
+    x,
+    y,
+    uuid,
+  });
+  io.to(findOpponent(socket)).emit('opponentMakeTower', {
+    //적에게 타워 생성 데이터 보냄
+    x,
+    y,
+    uuid,
+  });
 
-//   userGameState.userGold -= userGameState.towerCost;
+  //타워의 데이터 저장
+  setTower(userId, x, y, 1, uuid, serverTime);
 
-//   // 업데이트된 게임 상태를 클라이언트에 전송
-//   socket.emit('updateGameState', {
-//     userGold: userGameState.userGold,
-//   });
+  return { status: 'success', message: '타워 구매 완료' };
+};
 
-//   //타워의 데이터 저장
-//   setTower(userId, payload.towerId, 1, payload.position, serverTime);
+export const attackTower = (userId, payload) => {
+  const towers = getTower(userId);
 
-//   return { status: 'success', message: '타워 구매 완료' };
-// };
+  //타워의 데이터 찾기 현재 때린 타워의 ID를 기반으로 저장된 타워를 찾는다.
+  const tower = towers.find((data) => data.id === payload.towerId);
 
-// export const attackTower = (userId, payload) => {
-//   const towers = getTower(userId);
+  //해당 Id의 타워가 존재하는지 체크
+  if (!tower) {
+    return { status: 'fail', message: 'There is No Tower' };
+  }
 
-//   //타워의 데이터 찾기 현재 때린 타워의 ID를 기반으로 저장된 타워를 찾는다.
-//   const tower = towers.find((data) => data.id === payload.towerId);
+  // 해당 위치의 타워가 존재하는지 체크
+  if (tower.positon.x != payload.towerpos.x && tower.position.y != payload.towerpos.y) {
+    return { status: 'fail', message: 'Position is Not Matching' };
+  }
 
-//   //해당 Id의 타워가 존재하는지 체크
-//   if (!tower) {
-//     return { status: 'fail', message: 'There is No Tower' };
-//   }
+  const towerdistance = Math.sqrt(
+    Math.pow(tower.towerpos.x - monster.x, 2) + Math.pow(tower.towerpos.y - monster.y, 2),
+  );
 
-//   // 해당 위치의 타워가 존재하는지 체크
-//   if (tower.positon.x != payload.towerpos.x && tower.position.y != payload.towerpos.y) {
-//     return { status: 'fail', message: 'Position is Not Matching' };
-//   }
+  //타워의 사거리 체크
+  if (payload.towerRange <= towerdistance) {
+    return { status: 'fail', message: 'Tower range is not right' };
+  }
 
-//   const towerdistance = Math.sqrt(
-//     Math.pow(tower.towerpos.x - monster.x, 2) + Math.pow(tower.towerpos.y - monster.y, 2),
-//   );
+  const serverTime = Date.now(); // 현재 타임스탬프
 
-//   //타워의 사거리 체크
-//   if (payload.towerRange <= towerdistance) {
-//     return { status: 'fail', message: 'Tower range is not right' };
-//   }
+  setAttackTower(userId, payload.towerId, serverTime);
 
-//   const serverTime = Date.now(); // 현재 타임스탬프
+  return { status: 'success', message: 'towerattack' };
+};
 
-//   setAttackTower(userId, payload.towerId, serverTime);
+export const refundTower = (userId, payload, socket) => {
+  const towers = getTower(userId);
 
-//   return { status: 'success', message: 'towerattack' };
-// };
+  //타워의 데이터 찾기 현재 때린 타워의 ID를 기반으로 저장된 타워를 찾는다.
+  const tower = towers.find((data) => data.id === payload.towerId);
 
-// export const refundTower = (userId, payload, socket) => {
-//   const towers = getTower(userId);
+  //해당 Id의 타워가 존재하는지 체크
+  if (!tower) {
+    return { status: 'fail', message: 'There is No Tower' };
+  }
 
-//   //타워의 데이터 찾기 현재 때린 타워의 ID를 기반으로 저장된 타워를 찾는다.
-//   const tower = towers.find((data) => data.id === payload.towerId);
+  // 해당 위치의 타워가 존재하는지 체크
+  if (tower.position.x != payload.towerpos.x && tower.position.y != payload.towerpos.y) {
+    return { status: 'fail', message: 'Position is Not Matching' };
+  }
 
-//   //해당 Id의 타워가 존재하는지 체크
-//   if (!tower) {
-//     return { status: 'fail', message: 'There is No Tower' };
-//   }
+  const userGameState = getUserById(userId);
 
-//   // 해당 위치의 타워가 존재하는지 체크
-//   if (tower.position.x != payload.towerpos.x && tower.position.y != payload.towerpos.y) {
-//     return { status: 'fail', message: 'Position is Not Matching' };
-//   }
+  userGameState.userGold += Math.floor(userGameState.towerCost * (1 / 2));
 
-//   const userGameState = getUserById(userId);
+  // 업데이트된 게임 상태를 클라이언트에 전송
+  socket.emit('updateGameState', {
+    userGold: userGameState.userGold,
+  });
 
-//   userGameState.userGold += Math.floor(userGameState.towerCost * (1 / 2));
+  const serverTime = Date.now(); // 현재 타임스탬프
 
-//   // 업데이트된 게임 상태를 클라이언트에 전송
-//   socket.emit('updateGameState', {
-//     userGold: userGameState.userGold,
-//   });
+  setRefundTower(userId, payload.towerId, serverTime);
 
-//   const serverTime = Date.now(); // 현재 타임스탬프
+  return { status: 'success', message: '타워 환불 완료' };
+};
 
-//   setRefundTower(userId, payload.towerId, serverTime);
+export const upgradeTower = (userId, payload, socket) => {
+  const { towerData } = getGameAssets();
+  const towers = getTower(userId);
 
-//   return { status: 'success', message: '타워 환불 완료' };
-// };
+  //타워의 데이터 찾기 현재 때린 타워의 ID를 기반으로 저장된 타워를 찾는다.
+  const tower = towers.find((data) => data.id === payload.towerId);
 
-// export const upgradeTower = (userId, payload, socket) => {
-//   const { towerData } = getGameAssets();
-//   const towers = getTower(userId);
+  //해당 Id의 타워가 존재하는지 체크
+  if (!tower) {
+    return { status: 'fail', message: 'There is No Tower' };
+  }
 
-//   //타워의 데이터 찾기 현재 때린 타워의 ID를 기반으로 저장된 타워를 찾는다.
-//   const tower = towers.find((data) => data.id === payload.towerId);
+  // 해당 위치의 타워가 존재하는지 체크
+  if (tower.position.x != payload.towerpos.x && tower.position.y != payload.towerpos.y) {
+    return { status: 'fail', message: 'Position is Not Matching' };
+  }
 
-//   //해당 Id의 타워가 존재하는지 체크
-//   if (!tower) {
-//     return { status: 'fail', message: 'There is No Tower' };
-//   }
+  const updateRate = towerData.data.find((tower) => tower.level === payload.level);
+  const updateCost = towerData.data.find((tower) => tower.level + 1 === payload.level + 1);
 
-//   // 해당 위치의 타워가 존재하는지 체크
-//   if (tower.position.x != payload.towerpos.x && tower.position.y != payload.towerpos.y) {
-//     return { status: 'fail', message: 'Position is Not Matching' };
-//   }
+  if (!updateCost) {
+    return { status: 'fail', message: '없는 강화 정보값입니다.' };
+  }
 
-//   const updateRate = towerData.data.find((tower) => tower.level === payload.level);
-//   const updateCost = towerData.data.find((tower) => tower.level + 1 === payload.level + 1);
+  const userGameState = getUserById(userId);
 
-//   if (!updateCost) {
-//     return { status: 'fail', message: '없는 강화 정보값입니다.' };
-//   }
+  if (userGameState.userGold < updateCost.upgradeCost) {
+    return {
+      status: 'fail',
+      message: `강화 골드가 ${updateCost.upgradeCost - userGameState.userGold}만큼 부족합니다.`,
+    };
+  }
 
-//   const userGameState = getUserById(userId);
+  const nowRate = Math.floor(Math.random() * 100 + 1);
 
-//   if (userGameState.userGold < updateCost.upgradeCost) {
-//     return {
-//       status: 'fail',
-//       message: `강화 골드가 ${updateCost.upgradeCost - userGameState.userGold}만큼 부족합니다.`,
-//     };
-//   }
+  if (updateRate.upgradeRate <= nowRate) {
+    return {
+      status: 'fail',
+      message: `강화가 실패하였습니다. 강화 확률 : ${updateRate.upgradeRate}`,
+    };
+  }
 
-//   const nowRate = Math.floor(Math.random() * 100 + 1);
+  userGameState.userGold -= updateCost.upgradeCost;
+  const nowlevel = payload.level++;
+  // 업데이트된 게임 상태를 클라이언트에 전송
+  socket.emit('updateGameState', {
+    userGold: userGameState.userGold,
+  });
 
-//   if (updateRate.upgradeRate <= nowRate) {
-//     return {
-//       status: 'fail',
-//       message: `강화가 실패하였습니다. 강화 확률 : ${updateRate.upgradeRate}`,
-//     };
-//   }
+  socket.emit('updateTowerState', {
+    towerId: payload.towerId,
+    towerLevel: nowlevel,
+  });
 
-//   userGameState.userGold -= updateCost.upgradeCost;
-//   const nowlevel = payload.level++;
-//   // 업데이트된 게임 상태를 클라이언트에 전송
-//   socket.emit('updateGameState', {
-//     userGold: userGameState.userGold,
-//   });
+  tower.level = tower.level + 1;
 
-//   socket.emit('updateTowerState', {
-//     towerId: payload.towerId,
-//     towerLevel: nowlevel,
-//   });
-
-//   tower.level = tower.level + 1;
-
-//   return {
-//     status: 'success',
-//     message: '타워 강화 성공!',
-//   };
-// };
+  return {
+    status: 'success',
+    message: '타워 강화 성공!',
+  };
+};
