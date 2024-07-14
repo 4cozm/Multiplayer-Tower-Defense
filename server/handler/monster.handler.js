@@ -3,17 +3,23 @@ import { getGameAssets } from '../init/assets.js';
 // import { getUserById } from '../models/user.model.js';
 import { setLevel, getLevel, setSpawnMonster } from '../models/monster.model.js';
 import { v4 as uuidv4 } from 'uuid';
+import findOpponent from '../util/find.opponent.js';
 
-export const spawnMonster = (token, payload, socket, io) => {
+export const spawnMonster = (userId, payload, socket, io) => {
+  console.log('spawnMonster');
+  const opponent = findOpponent(socket);
+
   const { levelsData } = getGameAssets();
-  const { level } = payload;
+  const { monsterLevel } = payload;
 
   setLevel(token, level);
 
-  let currentLevels = getLevel(token);
+  let currentLevels = getLevel(userId);
   currentLevels.sort((a, b) => a.level - b.level);
   const currentLevel = currentLevels[currentLevels.length - 1].level;
   const levelData = levelsData.data.find((level) => level.id === currentLevel);
+
+  let monsterSpawnInterval, hp, power;
   if (levelData) {
     ({ monsterSpawnInterval, hp, power } = levelData);
   } else {
@@ -30,17 +36,12 @@ export const spawnMonster = (token, payload, socket, io) => {
     monsterHp: hp,
     monsterPower: power,
   });
-
-  const rooms = Array.from(socket.rooms).filter((room) => room !== socket.id);
-  if (rooms.length > 0) {
-    const roomId = rooms[0];
-
-    io.to(roomId).emit('opponentUpdateGameState', {
-      monsterSpawnInterval,
-      monsterHp: hp,
-      monsterPower: power,
-    });
-  }
+  io.to(opponent).emit('updateGameState', {
+    monsterSpawnInterval,
+    monsterHp: hp,
+    monsterPower: power,
+  });
+  console.log('spawnMonster end');
 };
 
 // export const removeMonster = (userId, payload, socket) => {

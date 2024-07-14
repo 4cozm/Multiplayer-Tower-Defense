@@ -174,10 +174,20 @@ function placeBase(position, isPlayer) {
 }
 
 function spawnMonster() {
-  sendEvent(40, { payload: { monsterLevel } }); // TODO. 서버로 몬스터 생성 이벤트 전송
+  const newMonster = new Monster(
+    game.monsterPath,
+    monsterImages,
+    game.monsterLevel,
+    game.monsterID,
+    game.monsterHp,
+    game.monsterPower,
+  );
 
-  const newMonster = new Monster(monsterPath, monsterImages, monsterLevel, monsterID, monsterHp, monsterPower);
-  monsters.push(newMonster);
+  sendEvent(40, { monsterLevel: game.monsterLevel }); // TODO. 서버로 몬스터 생성 이벤트 전송
+
+  game.monsters.push(newMonster);
+
+  console.log('몬스터 생성:', newMonster);
 }
 
 function gameLoop() {
@@ -259,7 +269,8 @@ function initGame() {
 
   setInterval(spawnMonster, monsterSpawnInterval); // 설정된 몬스터 생성 주기마다 몬스터 생성
   gameLoop(); // 게임 루프 최초 실행
-  isInitGame = true;
+  console.log('게임 초기화 완료');
+  game.isInitGame = true;
 }
 
 // 이미지 로딩 완료 후 서버와 연결하고 게임 초기화
@@ -320,7 +331,10 @@ Promise.all([
   });
 
   serverSocket.on('updateGameState', (syncData) => {
-    updateGameState(syncData);
+    console.log('Received sync data:', syncData);
+    if (syncData) {
+      eventHandler.updateGameState(syncData);
+    }
   });
 
   serverSocket.on('opponentUpdateGameState', (syncData) => {

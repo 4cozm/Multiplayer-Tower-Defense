@@ -24,7 +24,10 @@ export const getLevel = (uuid) => {
 
 export const setLevel = (uuid, level) => {
   // 삽입
-  return monsters[uuid].push({ level });
+  if (!monsters[uuid]) {
+    monsters[uuid] = [];
+  }
+  monsters[uuid].push({ level });
 };
 
 export const getSpawnMonster = (uuid) => {
