@@ -1,0 +1,14 @@
+const initializeGameState = (initialGameData, game) => {
+  game.monsterPath = initialGameData.monsterPath;
+  game.opponentMonsterPath = initialGameData.opponentMonsterPath;
+  game.basePosition = initialGameData.basePosition;
+  game.opponentBasePosition = initialGameData.opponentBasePosition;
+  game.userGold = initialGameData.userGold;
+  game.baseHp = initialGameData.baseHp;
+  game.towerCost = initialGameData.towerCost;
+  game.monsterLevel = initialGameData.monsterLevel;
+  game.monsterSpawnInterval = initialGameData.monsterSpawnInterval;
+  game.score = initialGameData.score;
+};
+
+export default initializeGameState;
