@@ -17,14 +17,10 @@ export const matchGame = async (userId, socket, io) => {
 
     // 클라이언트에 매치가 성사되었음을 알림
     io.to(player1.socketId).emit('matchFound', {
-      roomName: roomName,
-      opponent: player2.socketId,
-      opponentName: player2.userId,
+      userId: player1.userId,
     });
     io.to(player2.socketId).emit('matchFound', {
-      roomName: roomName,
-      opponent: player1.socketId,
-      opponentName: player1.userId,
+      userId: player2.userId,
     });
 
     clearMatchPlayers();
