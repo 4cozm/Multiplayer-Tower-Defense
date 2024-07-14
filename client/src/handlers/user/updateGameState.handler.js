@@ -5,7 +5,7 @@ const updateGameState = (syncData, game) => {
   game.monsterLevel = syncData.monsterLevel !== undefined ? syncData.monsterLevel : monsterLevel;
   game.monsterID = syncData.monsterID !== undefined ? syncData.monsterID : monsterID;
   game.monsterSpawnInterval =
-    game.syncData.monsterSpawnInterval !== undefined ? syncData.monsterSpawnInterval : monsterSpawnInterval;
+    syncData.monsterSpawnInterval !== undefined ? syncData.monsterSpawnInterval : monsterSpawnInterval;
   game.monsterHp = syncData.monsterHp !== undefined ? syncData.monsterHp : monsterHp;
   game.monsterPower = syncData.monsterPower !== undefined ? syncData.monsterPower : monsterPower;
 };

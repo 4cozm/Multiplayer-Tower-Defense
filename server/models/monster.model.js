@@ -28,7 +28,6 @@ export const setLevel = (uuid, level) => {
     monsters[uuid] = [];
   }
   monsters[uuid].push({ level });
-  console.log('Updated monsters:', monsters);
 };
 
 export const getSpawnMonster = (uuid) => {

@@ -1,25 +1,24 @@
-import { getGameAssets } from '../init/assets.js'; // 임의로 작성
-// import { getTower } from '../models/tower.model.js'; // 임의로 작성
+import { getGameAssets } from '../init/assets.js';
+// import { getTower } from '../models/tower.model.js';
 // import { getUserById } from '../models/user.model.js';
 import { setLevel, getLevel, setSpawnMonster } from '../models/monster.model.js';
 import { v4 as uuidv4 } from 'uuid';
+import findOpponent from '../util/find.opponent.js';
 
 export const spawnMonster = (userId, payload, socket, io) => {
-  console.log('spawnMonster:', userId);
-  // token: userId 전달 안됨
+  console.log('spawnMonster');
+  const opponent = findOpponent(socket);
+
   const { levelsData } = getGameAssets();
-  console.log('payload:', payload);
-  const { monsterLevel, opponent } = payload;
-  console.log('monsterLevel:', monsterLevel);
+  const { monsterLevel } = payload;
 
   setLevel(userId, monsterLevel);
 
   let currentLevels = getLevel(userId);
-  console.log('currentLevels:', currentLevels);
   currentLevels.sort((a, b) => a.level - b.level);
   const currentLevel = currentLevels[currentLevels.length - 1].level;
-  console.log('currentLevel:', currentLevel);
   const levelData = levelsData.data.find((level) => level.id === currentLevel);
+
   let monsterSpawnInterval, hp, power;
   if (levelData) {
     ({ monsterSpawnInterval, hp, power } = levelData);
@@ -43,6 +42,7 @@ export const spawnMonster = (userId, payload, socket, io) => {
     monsterHp: hp,
     monsterPower: power,
   });
+  console.log('spawnMonster end');
 };
 
 // export const removeMonster = (userId, payload, socket) => {
