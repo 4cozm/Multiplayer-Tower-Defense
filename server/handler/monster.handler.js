@@ -4,20 +4,23 @@ import { getGameAssets } from '../init/assets.js'; // 임의로 작성
 import { setLevel, getLevel, setSpawnMonster } from '../models/monster.model.js';
 import { v4 as uuidv4 } from 'uuid';
 
-export const spawnMonster = (token, payload, socket, io) => {
+export const spawnMonster = (userId, payload, socket, io) => {
+  console.log('spawnMonster:', userId);
   // token: userId 전달 안됨
   const { levelsData } = getGameAssets();
-  const { monsterLevel, opponent } = payload;
   console.log('payload:', payload);
+  const { monsterLevel, opponent } = payload;
+  console.log('monsterLevel:', monsterLevel);
 
-  setLevel(token, monsterLevel);
+  setLevel(userId, monsterLevel);
 
-  let currentLevels = getLevel(token);
+  let currentLevels = getLevel(userId);
   console.log('currentLevels:', currentLevels);
   currentLevels.sort((a, b) => a.level - b.level);
   const currentLevel = currentLevels[currentLevels.length - 1].level;
   console.log('currentLevel:', currentLevel);
   const levelData = levelsData.data.find((level) => level.id === currentLevel);
+  let monsterSpawnInterval, hp, power;
   if (levelData) {
     ({ monsterSpawnInterval, hp, power } = levelData);
   } else {
@@ -26,7 +29,7 @@ export const spawnMonster = (token, payload, socket, io) => {
 
   const newMonsterID = uuidv4();
 
-  setSpawnMonster(token, newMonsterID, level, monsterSpawnInterval, hp, power);
+  setSpawnMonster(userId, newMonsterID, monsterLevel, monsterSpawnInterval, hp, power);
 
   socket.emit('updateGameState', {
     monsterID: newMonsterID,

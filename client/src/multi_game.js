@@ -174,7 +174,7 @@ function placeBase(position, isPlayer) {
 }
 
 function spawnMonster() {
-  sendEvent(40, { payload: { monsterLevel, opponent } }); // TODO. 서버로 몬스터 생성 이벤트 전송
+  sendEvent(40, { monsterLevel, opponent }); // TODO. 서버로 몬스터 생성 이벤트 전송
 
   const newMonster = new Monster(monsterPath, monsterImages, monsterLevel, monsterID, monsterHp, monsterPower);
   monsters.push(newMonster);
@@ -286,7 +286,7 @@ Promise.all([
   serverSocket.on('connection', (data) => {
     // TODO. 서버와 연결되면 대결 대기열 큐 진입
     console.log('Connected to server:', serverSocket.id);
-    sendEvent(1, { userId: localStorage.getItem('userId') });
+    sendEvent(1);
   });
 
   serverSocket.on('matchFound', (data) => {
@@ -314,7 +314,7 @@ Promise.all([
         opponentCanvas.style.display = 'block';
 
         // TODO. 유저 및 상대방 유저 데이터 초기화
-        sendEvent(10, { userId: localStorage.getItem('userId'), payload: opponent });
+        sendEvent(10, { opponent });
 
         const initializeGameState = (initialGameData) => {
           monsterPath = initialGameData.monsterPath;
@@ -378,7 +378,7 @@ Promise.all([
 
 const sendEvent = (handlerId, payload) => {
   serverSocket.emit('event', {
-    userId: localStorage.getItem('user_Id'),
+    userId: localStorage.getItem('token'),
     clientVersion: CLIENT_VERSION,
     handlerId,
     payload,
