@@ -283,20 +283,10 @@ Promise.all([
     }
   });
 
-  serverSocket.on('connection', (data) => {
-    // TODO. 서버와 연결되면 대결 대기열 큐 진입
-    console.log('Connected to server:', serverSocket.id);
-    sendEvent(1);
-  });
-
   serverSocket.on('matchFound', (data) => {
     // 상대가 매치되면 3초 뒤 게임 시작
     progressBarMessage.textContent = '게임이 3초 뒤에 시작됩니다.';
-
-    console.log('서버로 부터 받은 init 데이터'); //테스트 코드
-    console.log(data); //테스트 코드
-
-    opponent = data.opponent;
+    userId = data.userId;
 
     let progressValue = 0;
     const progressInterval = setInterval(() => {
@@ -314,7 +304,7 @@ Promise.all([
         opponentCanvas.style.display = 'block';
 
         // TODO. 유저 및 상대방 유저 데이터 초기화
-        sendEvent(10, { opponent });
+        sendEvent(10);// 유저 및 상대방 유저 데이터 요청 initializeGameState
 
         const initializeGameState = (initialGameData) => {
           monsterPath = initialGameData.monsterPath;
@@ -378,7 +368,7 @@ Promise.all([
 
 const sendEvent = (handlerId, payload) => {
   serverSocket.emit('event', {
-    userId: localStorage.getItem('token'),
+    userId: userId,
     clientVersion: CLIENT_VERSION,
     handlerId,
     payload,

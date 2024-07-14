@@ -4,7 +4,7 @@ import initialData from './init.handler.js';
 import { spawnMonster } from './monster.handler.js';
 
 const handlerMappings = {
-  1: matchGame,
+  1: matchGame, //현재는 안쓰는중
   10: initialData,
   //   5: initTower,
   //   6: buyTower, //사용중
