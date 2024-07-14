@@ -28,6 +28,7 @@ let towerCost = 0; // 타워 구입 비용
 let monsterSpawnInterval = 0; // 몬스터 생성 주기
 
 // 유저 데이터
+let userId;
 let userGold = 0; // 유저 골드
 let base; // 기지 객체
 let baseHp = 0; // 기지 체력
@@ -45,6 +46,8 @@ let monsterHp = 0;
 let monsterPower = 0;
 
 // 상대 데이터
+let opponent;
+
 let opponentBase; // 상대방 기지 객체
 let opponentMonsterPath; // 상대방 몬스터 경로
 let opponentInitialTowerCoords; // 상대방 초기 타워 좌표
@@ -78,10 +81,11 @@ let bgm;
 
 function initMap() {
   ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height); // 배경 이미지 그리기
+  opponentCtx.drawImage(backgroundImage, 0, 0, opponentCanvas.width, opponentCanvas.height);
   drawPath(monsterPath, ctx);
   drawPath(opponentMonsterPath, opponentCtx);
-  placeInitialTowers(initialTowerCoords, towers, ctx); // 초기 타워 배치
-  placeInitialTowers(opponentInitialTowerCoords, opponentTowers, opponentCtx); // 상대방 초기 타워 배치
+  // placeInitialTowers(initialTowerCoords, towers, ctx); // 초기 타워 배치
+  // placeInitialTowers(opponentInitialTowerCoords, opponentTowers, opponentCtx); // 상대방 초기 타워 배치
   placeBase(basePosition, true);
   placeBase(opponentBasePosition, false);
 }
@@ -171,7 +175,7 @@ function placeBase(position, isPlayer) {
 }
 
 function spawnMonster() {
-  sendEvent(40, { payload: { monsterLevel } }); // TODO. 서버로 몬스터 생성 이벤트 전송
+  sendEvent(40, { monsterLevel, opponent }); // TODO. 서버로 몬스터 생성 이벤트 전송
 
   const newMonster = new Monster(monsterPath, monsterImages, monsterLevel, monsterID, monsterHp, monsterPower);
   monsters.push(newMonster);
@@ -272,7 +276,6 @@ Promise.all([
       token: localStorage.getItem('token'),
     },
   });
-
   serverSocket.on('connect_error', (err) => {
     if (err.message === 'Authentication error') {
       alert('잘못된 토큰입니다.');
@@ -292,12 +295,7 @@ Promise.all([
   serverSocket.on('matchFound', (data) => {
     // 상대가 매치되면 3초 뒤 게임 시작
     progressBarMessage.textContent = '게임이 3초 뒤에 시작됩니다.';
-
-    const testMessage = `반가워요 ${data.opponentName}님`;
-    sendEvent(999, { testMessage, opponent:data.opponent });
-
-    console.log('서버로 부터 받은 init 데이터'); //테스트 코드
-    console.log(data); //테스트 코드
+    userId = data.userId; //서버로 부터 받게됨
 
     let progressValue = 0;
     const progressInterval = setInterval(() => {
@@ -315,14 +313,33 @@ Promise.all([
         opponentCanvas.style.display = 'block';
 
         // TODO. 유저 및 상대방 유저 데이터 초기화
+        sendEvent(10); // 유저 및 상대방 유저 데이터 요청 initializeGameState
+
+        const initializeGameState = (initialGameData) => {
+          monsterPath = initialGameData.monsterPath;
+          opponentMonsterPath = initialGameData.opponentMonsterPath;
+          basePosition = initialGameData.basePosition;
+          opponentBasePosition = initialGameData.opponentBasePosition;
+          userGold = initialGameData.userGold;
+          baseHp = initialGameData.baseHp;
+          towerCost = initialGameData.towerCost;
+          monsterLevel = initialGameData.monsterLevel;
+          monsterSpawnInterval = initialGameData.monsterSpawnInterval;
+          score = initialGameData.score;
+        };
+
         if (!isInitGame) {
-          initGame();
+          serverSocket.on('initializeGameState', (initialGameData) => {
+            initializeGameState(initialGameData);
+            console.log('게임 초기화 데이터:', initialGameData);
+            initGame();
+          });
         }
       }
     }, 300);
   });
-
   serverSocket.on('updateGameState', (syncData) => {
+    console.log('Received sync data:', syncData);
     updateGameState(syncData);
   });
 
@@ -359,7 +376,7 @@ Promise.all([
 
 const sendEvent = (handlerId, payload) => {
   serverSocket.emit('event', {
-    userId: localStorage.getItem('user_Id'), //여기에는 유저 아이디가 없음 / init코드 구현 이후에 생성된 유저 ID를 보낼 수 있도록 해야함
+    userId: userId,
     clientVersion: CLIENT_VERSION,
     handlerId,
     payload,

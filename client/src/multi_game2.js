@@ -8,6 +8,9 @@ if (!localStorage.getItem('token2')) {
 }
 
 let serverSocket;
+
+const CLIENT_VERSION = '1.0.0';
+
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
@@ -37,7 +40,13 @@ const towers = []; // 유저 타워 목록
 let score = 0; // 게임 점수
 let highScore = 0; // 기존 최고 점수
 
+let monsterID = 0;
+let monsterHp = 0;
+let monsterPower = 0;
+
 // 상대 데이터
+let opponent;
+
 let opponentBase; // 상대방 기지 객체
 let opponentMonsterPath; // 상대방 몬스터 경로
 let opponentInitialTowerCoords; // 상대방 초기 타워 좌표
@@ -71,10 +80,11 @@ let bgm;
 
 function initMap() {
   ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height); // 배경 이미지 그리기
+  opponentCtx.drawImage(backgroundImage, 0, 0, opponentCanvas.width, opponentCanvas.height);
   drawPath(monsterPath, ctx);
   drawPath(opponentMonsterPath, opponentCtx);
-  placeInitialTowers(initialTowerCoords, towers, ctx); // 초기 타워 배치
-  placeInitialTowers(opponentInitialTowerCoords, opponentTowers, opponentCtx); // 상대방 초기 타워 배치
+  // placeInitialTowers(initialTowerCoords, towers, ctx); // 초기 타워 배치
+  // placeInitialTowers(opponentInitialTowerCoords, opponentTowers, opponentCtx); // 상대방 초기 타워 배치
   placeBase(basePosition, true);
   placeBase(opponentBasePosition, false);
 }
@@ -164,10 +174,10 @@ function placeBase(position, isPlayer) {
 }
 
 function spawnMonster() {
-  const newMonster = new Monster(monsterPath, monsterImages, monsterLevel);
-  monsters.push(newMonster);
+  sendEvent(40, { payload: { monsterLevel, opponent } }); // TODO. 서버로 몬스터 생성 이벤트 전송
 
-  // TODO. 서버로 몬스터 생성 이벤트 전송
+  const newMonster = new Monster(monsterPath, monsterImages, monsterLevel, monsterID, monsterHp, monsterPower);
+  monsters.push(newMonster);
 }
 
 function gameLoop() {
@@ -260,7 +270,7 @@ Promise.all([
   new Promise((resolve) => (pathImage.onload = resolve)),
   ...monsterImages.map((img) => new Promise((resolve) => (img.onload = resolve))),
 ]).then(() => {
-  serverSocket = io('http://15.165.15.118:3000', {
+  serverSocket = io('http://127.0.0.1:5555', {
     auth: {
       token: localStorage.getItem('token2'),
     },
@@ -275,11 +285,18 @@ Promise.all([
 
   serverSocket.on('connection', (data) => {
     // TODO. 서버와 연결되면 대결 대기열 큐 진입
+    console.log('Connected to server:', serverSocket.id);
+    sendEvent(1, { userId: localStorage.getItem('userId') });
   });
 
   serverSocket.on('matchFound', (data) => {
     // 상대가 매치되면 3초 뒤 게임 시작
     progressBarMessage.textContent = '게임이 3초 뒤에 시작됩니다.';
+
+    console.log('서버로 부터 받은 init 데이터'); //테스트 코드
+    console.log(data); //테스트 코드
+
+    opponent = data.opponent;
 
     let progressValue = 0;
     const progressInterval = setInterval(() => {
@@ -297,11 +314,39 @@ Promise.all([
         opponentCanvas.style.display = 'block';
 
         // TODO. 유저 및 상대방 유저 데이터 초기화
+        sendEvent(10, { userId: localStorage.getItem('userId'), payload: opponent });
+
+        const initializeGameState = (initialGameData) => {
+          monsterPath = initialGameData.monsterPath;
+          opponentMonsterPath = initialGameData.opponentMonsterPath;
+          basePosition = initialGameData.basePosition;
+          opponentBasePosition = initialGameData.opponentBasePosition;
+          userGold = initialGameData.userGold;
+          baseHp = initialGameData.baseHp;
+          towerCost = initialGameData.towerCost;
+          monsterLevel = initialGameData.monsterLevel;
+          monsterSpawnInterval = initialGameData.monsterSpawnInterval;
+          score = initialGameData.score;
+        };
+
         if (!isInitGame) {
-          initGame();
+          serverSocket.on('initializeGameState', (initialGameData) => {
+            initializeGameState(initialGameData);
+            console.log('게임 초기화 데이터:', initialGameData);
+            initGame();
+          });
         }
       }
     }, 300);
+  });
+
+  serverSocket.on('updateGameState', (syncData) => {
+    console.log('Received sync data:', syncData);
+    updateGameState(syncData);
+  });
+
+  serverSocket.on('opponentUpdateGameState', (syncData) => {
+    opponentUpdateGameState(syncData);
   });
 
   serverSocket.on('gameOver', (data) => {
@@ -331,6 +376,15 @@ Promise.all([
   });
 });
 
+const sendEvent = (handlerId, payload) => {
+  serverSocket.emit('event', {
+    userId: localStorage.getItem('user_Id'),
+    clientVersion: CLIENT_VERSION,
+    handlerId,
+    payload,
+  });
+};
+
 const buyTowerButton = document.createElement('button');
 buyTowerButton.textContent = '타워 구입';
 buyTowerButton.style.position = 'absolute';
@@ -344,3 +398,22 @@ buyTowerButton.style.display = 'none';
 buyTowerButton.addEventListener('click', placeNewTower);
 
 document.body.appendChild(buyTowerButton);
+
+const updateGameState = (syncData) => {
+  userGold = syncData.userGold !== undefined ? syncData.userGold : userGold;
+  baseHp = syncData.baseHp !== undefined ? syncData.baseHp : baseHp;
+  score = syncData.score !== undefined ? syncData.score : score;
+  monsterLevel = syncData.monsterLevel !== undefined ? syncData.monsterLevel : monsterLevel;
+  monsterID = syncData.monsterID !== undefined ? syncData.monsterID : monsterID;
+  monsterSpawnInterval =
+    syncData.monsterSpawnInterval !== undefined ? syncData.monsterSpawnInterval : monsterSpawnInterval;
+  monsterHp = syncData.monsterHp !== undefined ? syncData.monsterHp : monsterHp;
+  monsterPower = syncData.monsterPower !== undefined ? syncData.monsterPower : monsterPower;
+};
+
+// const opponentUpdateGameState = (syncData) => {
+//   userGold = syncData.userGold !== undefined ? syncData.userGold : userGold;
+//   baseHp = syncData.baseHp !== undefined ? syncData.baseHp : baseHp;
+//   score = syncData.score !== undefined ? syncData.score : score;
+//   monsterLevel = syncData.monsterLevel !== undefined ? syncData.monsterLevel : monsterLevel;
+// };
