@@ -287,7 +287,7 @@ Promise.all([
           serverSocket.on('initializeGameState', (initialGameData) => {
             eventHandler.initializeGameState(initialGameData);
 
-            console.log('게임 초기화 데이터:', game, '출력시간', Date.now());
+            console.log('게임 초기화 데이터:', game, '출력시간', Date.now()); //현재 클라이언트에서 이벤트 두번 받아오는 문제 있음
             initGame();
           });
         }
