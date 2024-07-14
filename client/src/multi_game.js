@@ -175,7 +175,7 @@ function placeBase(position, isPlayer) {
 }
 
 function spawnMonster() {
-  sendEvent(40, { monsterLevel, opponent }); // TODO. 서버로 몬스터 생성 이벤트 전송
+  //sendEvent(40, { monsterLevel, opponent }); // TODO. 서버로 몬스터 생성 이벤트 전송
 
   const newMonster = new Monster(monsterPath, monsterImages, monsterLevel, monsterID, monsterHp, monsterPower);
   monsters.push(newMonster);
