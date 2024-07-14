@@ -6,6 +6,8 @@ export const matchGame = async (userId, socket, io) => {
   console.log('대기열:', MatchArray); //테스트 코드
   const players = getMatchPlayers();
 
+  
+
   if (MatchArray.length >= 2) {
     const roomName = uuid(); // 방 번호의 규칙을 알 수 없도록 
 

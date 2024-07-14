@@ -28,6 +28,7 @@ let towerCost = 0; // 타워 구입 비용
 let monsterSpawnInterval = 0; // 몬스터 생성 주기
 
 // 유저 데이터
+let userId;
 let userGold = 0; // 유저 골드
 let base; // 기지 객체
 let baseHp = 0; // 기지 체력
@@ -275,7 +276,6 @@ Promise.all([
       token: localStorage.getItem('token'),
     },
   });
-
   serverSocket.on('connect_error', (err) => {
     if (err.message === 'Authentication error') {
       alert('잘못된 토큰입니다.');
@@ -295,13 +295,7 @@ Promise.all([
   serverSocket.on('matchFound', (data) => {
     // 상대가 매치되면 3초 뒤 게임 시작
     progressBarMessage.textContent = '게임이 3초 뒤에 시작됩니다.';
-
-    const testMessage = `반가워요 ${data.opponentName}님`;
-    sendEvent(999, { testMessage, opponent:data.opponent });
-
-    console.log('서버로 부터 받은 init 데이터'); //테스트 코드
-    console.log(data); //테스트 코드
-    userId = data.userId;
+    userId = data.userId; //서버로 부터 받게됨
 
     let progressValue = 0;
     const progressInterval = setInterval(() => {
@@ -319,7 +313,7 @@ Promise.all([
         opponentCanvas.style.display = 'block';
 
         // TODO. 유저 및 상대방 유저 데이터 초기화
-        sendEvent(10);// 유저 및 상대방 유저 데이터 요청 initializeGameState
+        sendEvent(10); // 유저 및 상대방 유저 데이터 요청 initializeGameState
 
         const initializeGameState = (initialGameData) => {
           monsterPath = initialGameData.monsterPath;
@@ -344,7 +338,6 @@ Promise.all([
       }
     }, 300);
   });
-
   serverSocket.on('updateGameState', (syncData) => {
     console.log('Received sync data:', syncData);
     updateGameState(syncData);
