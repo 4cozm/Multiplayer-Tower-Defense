@@ -6,7 +6,11 @@ import configs from '../util/config.js';
 // import { getHightScoreUsers } from '../models/score.model.js';
 import jwt from 'jsonwebtoken';
 
-export const handleDisconnect = (socket) => {
+export const handleDisconnect = (socket, isMatchOverlap = false) => {
+  if (isMatchOverlap) {
+    // matchOverlap 이벤트일 때는 아무 작업도 하지 않음
+    return;
+  }
   deletePlayerFromMatchModel(socket); // 매칭 대기열에 있었다면 대기열에서 삭제
   removeUser(socket.id); //소켓에서 삭제
 };

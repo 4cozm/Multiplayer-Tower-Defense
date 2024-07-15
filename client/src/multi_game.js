@@ -327,6 +327,18 @@ Promise.all([
     }
   });
 
+  // 매치 대기 중 중복된 사용자가 있을 때
+  serverSocket.on('matchOverlap', (data) => {
+    alert(data.message);
+    location.href = '/login.html';
+  });
+
+  // 게임 시작 도중 상대방이 나갔을 때 처리
+  serverSocket.on('opponentLeft', (data) => {
+    alert(data.message);
+    location.reload();
+  });
+
   //타워 구입 이벤트
   serverSocket.on('makeTower', (data) => {
     eventHandler.makeTower(data);

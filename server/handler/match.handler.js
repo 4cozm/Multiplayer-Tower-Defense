@@ -4,12 +4,28 @@ import { v4 as uuid } from 'uuid';
 export const matchGame = async (userId, socket, io) => {
   const MatchArray = addMatch(userId, socket.id);
   console.log('대기열:', MatchArray); //테스트 코드
+
+  // 중복된 userId가 있는지 확인
+  const duplicateUsers = MatchArray.filter((item) => item.userId === userId);
+
+  if (duplicateUsers.length > 1) {
+    for (let i = 1; i < duplicateUsers.length; i++) {
+      const indexToRemove = MatchArray.findIndex((item) => item.socketId === duplicateUsers[i].socketId);
+      if (indexToRemove !== -1) {
+        MatchArray.splice(indexToRemove, 1);
+      }
+    }
+    socket.isMatchOverlap = true;
+    socket.emit('matchOverlap', {
+      message: '중복된 유저입니다.',
+    });
+  }
+  console.log('최종 대기열:', MatchArray); //테스트 코드
+
   const players = getMatchPlayers();
 
-  
-
   if (MatchArray.length >= 2) {
-    const roomName = uuid(); // 방 번호의 규칙을 알 수 없도록 
+    const roomName = uuid(); // 방 번호의 규칙을 알 수 없도록
 
     const player1 = players[0];
     const player2 = players[1];
@@ -26,5 +42,12 @@ export const matchGame = async (userId, socket, io) => {
     });
 
     clearMatchPlayers();
+
+    const handlePlayerDisconnect = (socket) => {
+      io.to(roomName).emit('opponentLeft', { message: '상대방이 게임을 나갔습니다.' });
+    };
+
+    io.sockets.sockets.get(player1.socketId).on('disconnect', () => handlePlayerDisconnect(socket));
+    io.sockets.sockets.get(player2.socketId).on('disconnect', () => handlePlayerDisconnect(socket));
   }
 };
