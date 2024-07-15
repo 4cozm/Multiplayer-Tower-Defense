@@ -39,9 +39,9 @@ export const setLevel = (uuid, level) => {
   monsters[uuid].push({ level });
 };
 
-export const getSpawnMonster = (uuid) => {
+export const getMonsterById = (userId, uuid) => {
   // 조회
-  return monsters[uuid];
+  return monsters[userId][uuid];
 };
 
 // export const getDieMonster = (uuid) => {
