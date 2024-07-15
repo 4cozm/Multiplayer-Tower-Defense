@@ -15,7 +15,7 @@ const handlerMappings = {
   //   13: damageMonster,
   //   14: monsterAttackBase,
   //   15: checkForBreak,
-  //   20: gameEnd,
+  20: endGame,
   40: spawnMonster,
   44: killMonster,
   50: monsterAttackBase,

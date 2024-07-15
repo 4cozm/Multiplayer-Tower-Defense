@@ -4,6 +4,8 @@
 // import { getUserById } from '../models/user.model.js';
 // import jwt from 'jsonwebtoken';
 
+import findOpponent from '../util/find.opponent.js';
+
 // export const gameStart = (uuid) => {
 //   clearTower(uuid);
 //   clearMonster(uuid);
@@ -38,3 +40,13 @@
 //     console.error(err.message);
 //   }
 // };
+
+export const endGame = (userId, payload, socket, io) => {
+  const opponent = findOpponent(socket);
+
+  const { isWin } = payload;
+
+  socket.emit('gameOver', { isWin: isWin });
+
+  io.to(opponent).emit('gameOver', { isWin: !isWin });
+};
