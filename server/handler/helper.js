@@ -8,7 +8,7 @@ import jwt from 'jsonwebtoken';
 
 export const handleDisconnect = (socket) => {
   deletePlayerFromMatchModel(socket); // 매칭 대기열에 있었다면 대기열에서 삭제
-  removeUser(socket.id); //소켓에서 삭제
+  removeUser(socket.id); //서버에서 관리하는 유저 객체에서 삭제
 };
 
 export const handleConnection = (socket) => {

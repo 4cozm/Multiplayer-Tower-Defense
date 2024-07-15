@@ -11,7 +11,6 @@ if (!localStorage.getItem('token')) {
 
 export let game; // 핸들러의 index.js에서 사용하기 위해 export함
 let serverSocket;
-let init = false; //inital 데이터가 커서 재전송 받는 문제가 있는듯 하여 생성
 
 const CLIENT_VERSION = '1.0.0';
 
@@ -317,6 +316,12 @@ Promise.all([
     }
   });
 
+  // 게임 시작 도중 상대방이 나갔을 때 처리
+  serverSocket.on('opponentLeft', (data) => {
+    alert(data.message);
+    location.reload();
+  });
+
   //타워 구입 이벤트
   serverSocket.on('makeTower', (data) => {
     eventHandler.makeTower(data);
@@ -349,7 +354,8 @@ Promise.all([
 
   //에러 이벤트
   serverSocket.on('error', (errorResponse) => {
-    console.log('Received error:', errorResponse);
+    alert(errorResponse);
+    location.href = '/login.html';
   });
 });
 

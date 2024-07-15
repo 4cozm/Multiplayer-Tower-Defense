@@ -35,14 +35,17 @@ export const clearMatchPlayers = () => {
 export const deletePlayerFromMatchModel = (socket) => {
   // 유저가 대기열 상태에서 게임을 종료할 시 배열에서 삭제
   try {
-    const index = matchModel.findIndex((item) => item.userId === socket.data.userId);
+    const matchModel = getMatchPlayers();
+    const index = matchModel.findIndex((item) => {
+      return item.socketId === socket.id;
+    });
+
     if (index !== -1) {
-      // 해당 인덱스의 플레이어를 삭제하고 삭제된 항목을 반환
-      console.log(socket.data.userId + '유저가 대기열에서 제거 되었습니다.');
-      matchModel.splice(index, 1)[0]; // matchModel 배열에서 삭제
-      console.log("대기열 남은 유저 수:",matchModel.length);
+      matchModel.splice(index, 1); // matchModel 배열에서 삭제
+      console.log(socket.data.userId + ' 유저가 대기열에서 나갔습니다.');
+      console.log('대기열 남은 유저 수:', matchModel.length);
     }
   } catch (error) {
-    console.error('대기열에서 유저 제거중 오류 발생', error);
+    console.error('대기열에서 유저 제거 중 오류 발생', error);
   }
 };
