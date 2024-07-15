@@ -147,7 +147,7 @@ function placeBase(position, isPlayer) {
 
 function spawnMonster() {
   // TODO. 서버로 몬스터 생성 이벤트 전송
-  sendEvent(40);
+  sendEvent(40, { monsterLevel: game.monsterLevel });
 }
 
 function gameLoop() {
@@ -179,7 +179,6 @@ function gameLoop() {
   game.monsters.forEach((monster) => {
     //이 코드가 사라져 있었음 범인 누구임... 원래 부터 없었을 수도 있고
     monster.draw(ctx, false);
-    console.log('몬스터 그리기', monster);
   });
 
   // 몬스터가 공격을 했을 수 있으므로 기지 다시 그리기
@@ -199,6 +198,7 @@ function gameLoop() {
       }
     } else {
       // TODO. 몬스터 사망 이벤트 전송
+      sendEvent(44, { monsterID: monster.monsterID });
       game.monsters.splice(i, 1);
     }
   }
@@ -284,7 +284,6 @@ Promise.all([
         if (!game.isInitGame) {
           serverSocket.on('initializeGameState', (initialGameData) => {
             eventHandler.initializeGameState(initialGameData);
-            console.log(monsterImages);
             console.log('게임 초기화 데이터:', game, '출력시간', Date.now()); //현재 클라이언트에서 이벤트 두번 받아오는 문제 있음
             initGame();
           });
@@ -333,7 +332,6 @@ Promise.all([
   //몬스터 스폰 이벤트
   serverSocket.on('spawnMonster', (data) => {
     eventHandler.spawnMonster(data);
-    console.log('몬스터 생성 이벤트 수신', data);
   });
   serverSocket.on('opponentSpawnMonster', (data) => {
     eventHandler.opponentSpawnMonster(data);
