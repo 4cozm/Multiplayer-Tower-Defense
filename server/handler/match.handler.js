@@ -2,24 +2,19 @@ import { addMatch, getMatchPlayers, clearMatchPlayers } from '../models/match.mo
 import { v4 as uuid } from 'uuid';
 
 export const matchGame = async (userId, socket, io) => {
-  const MatchArray = addMatch(userId, socket.id);
-  console.log('대기열:', MatchArray); //테스트 코드
-
-  // 중복된 userId가 있는지 확인
+  const MatchArray = getMatchPlayers();
   const duplicateUsers = MatchArray.filter((item) => item.userId === userId);
 
-  if (duplicateUsers.length > 1) {
-    for (let i = 1; i < duplicateUsers.length; i++) {
-      const indexToRemove = MatchArray.findIndex((item) => item.socketId === duplicateUsers[i].socketId);
-      if (indexToRemove !== -1) {
-        MatchArray.splice(indexToRemove, 1);
-      }
-    }
+  if (duplicateUsers.length > 0) {
     socket.isMatchOverlap = true;
     socket.emit('matchOverlap', {
       message: '중복된 유저입니다.',
     });
+    return;
   }
+
+  // 중복된 유저가 없으면 addMatch에 추가
+  addMatch(userId, socket.id);
   console.log('최종 대기열:', MatchArray); //테스트 코드
 
   const players = getMatchPlayers();
