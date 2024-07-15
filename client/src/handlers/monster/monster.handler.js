@@ -8,7 +8,7 @@ export const spawnMonster = (data) => {
 };
 
 export const opponentSpawnMonster = (data) => {
-  const { monsterLevel, monsterID, monsterHp, monsterPower } = data;
-  const newMonster = new OpponentMonster(monsterLevel, monsterID, monsterHp, monsterPower);
+  const { monsterLevel, monsterID, monsterHp, monsterPower, monsterNumber } = data;
+  const newMonster = new OpponentMonster(monsterLevel, monsterID, monsterHp, monsterPower, monsterNumber);
   game.opponentMonsters.push(newMonster); //몬스터를 그리기
 };

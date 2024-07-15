@@ -11,7 +11,6 @@ export const spawnMonster = (userId, _, socket, io) => {
   const { levelsData } = getGameAssets();
 
   const stage = getLevel(userId);
-  console.log('stage', stage);
 
   const levelData = levelsData.data.find((data) => data.stage === stage);
 
@@ -41,6 +40,7 @@ export const monsterAttackBase = (userId, payload, socket, io) => {
     throw new Error('몬스터 정보를 찾을 수 없습니다.');
   }
   baseHp -= monsterInfo.power;
+  console.log('baseHp', baseHp);
 
   setBaseHp(userId, baseHp);
   removeMonster(userId, monsterID);

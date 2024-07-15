@@ -231,6 +231,7 @@ function initGame() {
   if (game.isInitGame) {
     return;
   }
+
   bgm = new Audio('sounds/bgm.mp3');
   bgm.loop = true;
   bgm.volume = 0.2;
@@ -285,25 +286,23 @@ Promise.all([
         opponentCanvas.style.display = 'block';
 
         // TODO. 유저 및 상대방 유저 데이터 초기화
-        sendEvent(10); // 유저 및 상대방 유저 데이터 요청 initializeGameState
-        if (!game.isInitGame) {
-          serverSocket.on('initializeGameState', (initialGameData) => {
-            eventHandler.initializeGameState(initialGameData);
-            console.log('게임 초기화 데이터:', game, '출력시간', Date.now()); //현재 클라이언트에서 이벤트 두번 받아오는 문제 있음
-            initGame();
-          });
-        }
+        sendEvent(10);
       }
     }, 300);
   });
+
+  serverSocket.on('initializeGameState', (initialGameData) => {
+    if (!game.isInitGame) {
+      eventHandler.initializeGameState(initialGameData);
+      console.log('게임 초기화 데이터:', game, '출력시간', Date.now()); //현재 클라이언트에서 이벤트 두번 받아오는 문제 있음
+      initGame();
+    }
+  });
+
   serverSocket.on('updateGameState', (syncData) => {
     console.log('Received sync data:', syncData);
     eventHandler.updateGameState(syncData);
   });
-
-  // serverSocket.on('opponentUpdateGameState', (syncData) => { 상대방 변경사항
-  //   opponentUpdateGameState(syncData);
-  // });
 
   serverSocket.on('gameOver', (data) => {
     bgm.pause();
@@ -380,10 +379,3 @@ buyTowerButton.style.display = 'none';
 buyTowerButton.addEventListener('click', placeNewTower);
 
 document.body.appendChild(buyTowerButton);
-
-// const opponentUpdateGameState = (syncData) => {
-//   userGold = syncData.userGold !== undefined ? syncData.userGold : userGold;
-//   baseHp = syncData.baseHp !== undefined ? syncData.baseHp : baseHp;
-//   score = syncData.score !== undefined ? syncData.score : score;
-//   monsterLevel = syncData.monsterLevel !== undefined ? syncData.monsterLevel : monsterLevel;
-// };
