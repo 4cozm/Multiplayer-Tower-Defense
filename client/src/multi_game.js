@@ -179,6 +179,7 @@ function gameLoop() {
   game.monsters.forEach((monster) => {
     //이 코드가 사라져 있었음 범인 누구임... 원래 부터 없었을 수도 있고
     monster.draw(ctx, false);
+    console.log('몬스터 그리기', monster);
   });
 
   // 몬스터가 공격을 했을 수 있으므로 기지 다시 그리기
@@ -193,6 +194,7 @@ function gameLoop() {
         attackedSound.volume = 0.3;
         attackedSound.play();
         // TODO. 몬스터가 기지를 공격했을 때 서버로 이벤트 전송
+        sendEvent(50, { monsterID: monster.monsterID });
         game.monsters.splice(i, 1);
       }
     } else {
@@ -331,6 +333,7 @@ Promise.all([
   //몬스터 스폰 이벤트
   serverSocket.on('spawnMonster', (data) => {
     eventHandler.spawnMonster(data);
+    console.log('몬스터 생성 이벤트 수신', data);
   });
   serverSocket.on('opponentSpawnMonster', (data) => {
     eventHandler.opponentSpawnMonster(data);

@@ -23,25 +23,48 @@ export const addMonster = (userId, uuid, hp, power) => {
   if (!monsters[userId]) {
     monsters[userId] = [];
   }
-  monsters[userId][uuid] = { hp, power };
+  monsters[userId][uuid] = { hp, power, timestamp: Date.now() };
 };
 
-export const getLevel = (uuid) => {
+export const getSpawnMonster = (userId) => {
   // 조회
-  return monsters[uuid];
+  return monsters[userId];
 };
 
-export const setLevel = (uuid, level) => {
+export const removeMonster = (userId, uuid) => {
+  delete monsters[userId][uuid];
+};
+
+/*
+export const setLevel = (userId, level) => {
   // 삽입
-  if (!monsters[uuid]) {
-    monsters[uuid] = [];
+  if (!monsters[userId]) {
+    monsters[userId] = [];
   }
-  monsters[uuid].push({ level });
+  monsters[userId].push({ level });
 };
 
-export const getSpawnMonster = (uuid) => {
+export const getLevel = (userId) => {
   // 조회
-  return monsters[uuid];
+  return monsters[userId];
+};
+*/
+
+export const setBaseHp = (userId, baseHp) => {
+  if (!monsters[userId]) {
+    monsters[userId] = {};
+  }
+  if (!monsters[userId].baseHp) {
+    monsters[userId].baseHp = 200;
+  }
+  monsters[userId].baseHp = baseHp;
+};
+
+export const getBaseHp = (userId) => {
+  if (!monsters[userId] || !monsters[userId].baseHp) {
+    return 200;
+  }
+  return monsters[userId].baseHp;
 };
 
 // export const getDieMonster = (uuid) => {

@@ -5,7 +5,7 @@
     "userGold": 1000,
     "baseHp": 200,
     "towerCost": 200,
-    "stage": 1,
+    "monsterLevel": 1,
     "monsterSpawnInterval": 1200,
     "score": 0,
     "highScore": 0

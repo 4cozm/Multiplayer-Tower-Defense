@@ -1,10 +1,12 @@
 import { getGameAssets } from '../init/assets.js';
 // import { getTower } from '../models/tower.model.js';
 // import { getUserById } from '../models/user.model.js';
-import { setLevel, addMonster } from '../models/monster.model.js';
+import { addMonster, removeMonster } from '../models/monster.model.js';
 import { v4 as uuidv4 } from 'uuid';
 import findOpponent from '../util/find.opponent.js';
 import { getUserById } from '../models/user.model.js';
+import { getSpawnMonster } from '../models/monster.model.js';
+import { setBaseHp, getBaseHp } from '../models/monster.model.js';
 
 export const spawnMonster = (userId, payload, socket, io) => {
   const opponent = findOpponent(socket);
@@ -21,14 +23,44 @@ export const spawnMonster = (userId, payload, socket, io) => {
     throw new Error('해당 레벨을 찾을 수 없습니다.');
     //레벨이 끝까지 도달했을때는 항상 오류가 발생하니,마지막 레벨 몬스터를 스폰하도록 해야할 것 같아요
   }
-  const { level: monsterLevel, hp: monsterHp, power: monsterPower } = levelData; //서버측과 동일한 이름으로 쓰기 위해서 변경
+  const { stage: monsterLevel, hp: monsterHp, power: monsterPower } = levelData; //서버측과 동일한 이름으로 쓰기 위해서 변경
   const monsterID = uuidv4();
+  const monsterNumber = Math.floor(Math.random() * 5);
 
   addMonster(userId, monsterID, monsterHp, monsterPower); //배열에 추가
 
   //보내야 할 정보는 레벨,몬스터고유 번호,체력,공격력 입니다
-  socket.emit('spawnMonster', { monsterLevel, monsterID, monsterHp, monsterPower });
-  io.to(opponent).emit('opponentSpawnMonster', { monsterLevel, monsterID, monsterHp, monsterPower });
+  socket.emit('spawnMonster', { monsterLevel, monsterID, monsterHp, monsterPower, monsterNumber });
+  io.to(opponent).emit('opponentSpawnMonster', { monsterLevel, monsterID, monsterHp, monsterPower, monsterNumber });
+};
+
+export const monsterAttackBase = (userId, payload, socket, io) => {
+  const opponent = findOpponent(socket);
+  let isWin = true;
+
+  const { monsterID } = payload;
+  console.log('monsterID', monsterID);
+
+  let baseHp = getBaseHp(userId);
+  console.log('baseHp', baseHp);
+
+  const monsterInfo = getSpawnMonster(userId)[monsterID];
+  if (!monsterInfo) {
+    throw new Error('몬스터 정보를 찾을 수 없습니다.');
+  }
+  baseHp -= monsterInfo.power;
+
+  setBaseHp(userId, baseHp);
+  removeMonster(userId, monsterID);
+
+  if (baseHp <= 0) {
+    isWin = false;
+    //게임 종료
+    socket.emit('gameOver', { isWin });
+    io.to(opponent).emit('gameOver', { isWin: true });
+  }
+
+  socket.emit('updateGameState', { baseHp });
 };
 
 // export const removeMonster = (userId, payload, socket) => {
