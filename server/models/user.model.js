@@ -12,6 +12,7 @@ export const addUser = (userId, init, socket) => {
     score: init.data.score,
     highScore: 0,
     socketId: socket,
+    level: 1,
   };
   users[userId] = newUser;
 };
@@ -27,6 +28,6 @@ export const getUser = () => {
   return users;
 };
 
-export const getUserById = (token) => {
-  return users[token];
+export const getUserById = (userId) => {
+  return users[userId];
 };

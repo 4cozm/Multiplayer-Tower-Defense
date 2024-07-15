@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-let gameAssets = {};
+export let gameAssets = {}; //loadGameAssets 쓰면 이상하게 작동하지 않음..
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -33,7 +33,7 @@ export const loadGameAssets = async () => {
     ]);
 
     gameAssets = { init, levelsData, towerData };
-    return gameAssets;
+    console.log('JSON 데이터 로드 완료!');
   } catch (e) {
     throw new Error('Failed to load game assets: ' + e.message);
   }

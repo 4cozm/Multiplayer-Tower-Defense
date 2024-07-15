@@ -5,7 +5,7 @@ import Game from './class/Game.js';
 import eventHandler from './handlers/index.js';
 
 if (!localStorage.getItem('token')) {
-  alert('로그인이 필요합니다.');
+  alert('로그인이 필요합니다.token1번이 없습니다');
   location.href = '/login.html';
 }
 
@@ -128,9 +128,7 @@ function placeNewTower() {
     alert('골드가 부족합니다.');
     return;
   }
-
   const { x, y } = getRandomPositionNearPath(200);
-
   //서버로 포탑 좌표 전달
   sendEvent(6, { x, y });
 }
@@ -192,19 +190,11 @@ function gameLoop() {
         const attackedSound = new Audio('sounds/attacked.wav');
         attackedSound.volume = 0.1;
         attackedSound.play();
-
-        if (game.baseHp <= 0) {
-          sendEvent(20, { isWin: false });
-        }
-
-        // TODO. 몬스터가 기지를 공격했을 때 서버로 이벤트 전송
         sendEvent(50, { monsterID: monster.monsterID });
-        game.monsters.splice(i, 1);
+        game.monsters.splice(i, 1); //기지 충돌시 삭제는 클라이언트 주도
       }
     } else {
-      // TODO. 몬스터 사망 이벤트 전송
-      sendEvent(44, { monsterID: monster.monsterID });
-      game.monsters.splice(i, 1);
+      // TODO. 몬스터 사망 이벤트 전송 => 사망 이벤트도 서버에서 처리해줌
     }
   }
 
@@ -294,7 +284,7 @@ Promise.all([
   serverSocket.on('initializeGameState', (initialGameData) => {
     if (!game.isInitGame) {
       eventHandler.initializeGameState(initialGameData);
-      console.log('게임 초기화 데이터:', game, '출력시간', Date.now()); //현재 클라이언트에서 이벤트 두번 받아오는 문제 있음
+      console.log('게임 초기화 데이터:', game, '출력시간', Date.now());
       initGame();
     }
   });
@@ -341,6 +331,21 @@ Promise.all([
   serverSocket.on('opponentSpawnMonster', (data) => {
     eventHandler.opponentSpawnMonster(data);
   });
+  //몬스터 처치 이벤트
+  serverSocket.on('monsterDead', (data) => {
+    eventHandler.monsterDead(data);
+  });
+  serverSocket.on('opponentMonsterDead', (data) => {
+    eventHandler.opponentMonsterDead(data);
+  });
+
+  //타워 공격 이벤트
+  serverSocket.on('towerAttack', (data) => {
+    eventHandler.towerAttack(data);
+  });
+  serverSocket.on('opponentTowerAttack', (data) => {
+    eventHandler.opponentTowerAttack(data);
+  });
 
   //에러 이벤트
   serverSocket.on('error', (errorResponse) => {
@@ -349,15 +354,15 @@ Promise.all([
 });
 
 /**
- * 1:matchGame :
- * 6:buyTower : 타워의 x,y 좌표
+ * 1: matchGame, // 현재는 안쓰는중
+ * 10: initialData,
+ * 6: buyTower,
+ * 7: attackTower,
+ * 40: spawnMonster,
+ * 50: monsterAttackBase,
  *
- *
- *
- *
- * 999:connectionTest
  */
-const sendEvent = (handlerId, payload) => {
+export const sendEvent = (handlerId, payload) => {
   serverSocket.emit('event', {
     userId: game.userId,
     clientVersion: CLIENT_VERSION,
