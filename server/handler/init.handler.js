@@ -36,9 +36,9 @@ export const initialData = (userId, payload, socket, io) => {
   const monsterPath = generateRandomMonsterPath();
   const opponentMonsterPath = generateRandomMonsterPath();
 
-  const basePosition = { x: monsterPath[monsterPath.length - 1].x + 100, y: monsterPath[monsterPath.length - 1].y };
+  const basePosition = { x: monsterPath[monsterPath.length - 1].x + 80, y: monsterPath[monsterPath.length - 1].y };
   const opponentBasePosition = {
-    x: opponentMonsterPath[opponentMonsterPath.length - 1].x + 100,
+    x: opponentMonsterPath[opponentMonsterPath.length - 1].x + 80,
     y: opponentMonsterPath[opponentMonsterPath.length - 1].y,
   };
 
