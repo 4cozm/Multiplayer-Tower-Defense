@@ -3,7 +3,8 @@ import { getTower, setTowerAttackLog, setRefundTower, setTower } from '../models
 import { getUserById } from '../models/user.model.js';
 import { v4 } from 'uuid';
 import findOpponent from '../util/find.opponent.js';
-import { getMonsterById } from '../models/monster.model.js';
+import { getMonsterById, removeMonster } from '../models/monster.model.js';
+import { killMonster } from './monster.handler.js';
 
 export const buyTower = (userId, payload, socket, io) => {
   //타워의 가격 비교
@@ -71,6 +72,8 @@ export const attackTower = (userId, payload, socket, io) => {
   monster.hp = monster.hp - tower.power;
   if (monster.hp < 0) {
     //사망처리
+    killMonster(userId, socket); //몬스터 사망시 점수,돈,레벨(스테이지) 변경해주는 함수
+    removeMonster(userId, monsterId); //몬스터 제거시 배열에서 삭제하는 함수
     socket.emit('monsterDead', { monsterId: monsterId });
     io.to(opponent).emit('opponentMonsterDead', { monsterId: monsterId });
   } else {

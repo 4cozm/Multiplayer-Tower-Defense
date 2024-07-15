@@ -15,16 +15,9 @@ export const removeMonster = (userId, uuid) => {
   delete monsters[userId][uuid];
 };
 
-export const setLevel = (userId, level) => {
-  if (!monsters[userId]) {
-    monsters[userId] = [];
-  }
-  monsters[userId].level = level;
-};
-
-export const getMonsterById = (userId, uuid) => {
+export const getMonsterById = (userId, monsterID) => {
   // 조회
-  return monsters[userId][uuid];
+  return monsters[userId][monsterID];
 };
 
 export const setBaseHp = (userId, baseHp) => {

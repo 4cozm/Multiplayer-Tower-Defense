@@ -3,7 +3,6 @@ import initialData from './init.handler.js';
 
 import { buyTower, attackTower } from './tower.handler.js';
 import { monsterAttackBase, spawnMonster } from './monster.handler.js';
-import { buyTower } from './tower.handler.js';
 
 const handlerMappings = {
   1: matchGame, // 현재는 안쓰는중

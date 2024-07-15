@@ -128,9 +128,7 @@ function placeNewTower() {
     alert('골드가 부족합니다.');
     return;
   }
-
   const { x, y } = getRandomPositionNearPath(200);
-
   //서버로 포탑 좌표 전달
   sendEvent(6, { x, y });
 }
@@ -192,14 +190,8 @@ function gameLoop() {
         const attackedSound = new Audio('sounds/attacked.wav');
         attackedSound.volume = 0.1;
         attackedSound.play();
-
-        if (game.baseHp <= 0) {
-          sendEvent(20, { isWin: false });
-        }
-
-        // TODO. 몬스터가 기지를 공격했을 때 서버로 이벤트 전송
         sendEvent(50, { monsterID: monster.monsterID });
-        game.monsters.splice(i, 1);
+        game.monsters.splice(i, 1); //기지 충돌시 삭제는 클라이언트 주도
       }
     } else {
       // TODO. 몬스터 사망 이벤트 전송 => 사망 이벤트도 서버에서 처리해줌
@@ -292,7 +284,7 @@ Promise.all([
   serverSocket.on('initializeGameState', (initialGameData) => {
     if (!game.isInitGame) {
       eventHandler.initializeGameState(initialGameData);
-      console.log('게임 초기화 데이터:', game, '출력시간', Date.now()); //현재 클라이언트에서 이벤트 두번 받아오는 문제 있음
+      console.log('게임 초기화 데이터:', game, '출력시간', Date.now());
       initGame();
     }
   });
@@ -362,19 +354,13 @@ Promise.all([
 });
 
 /**
-  1: matchGame, //현재는 안쓰는중
-  10: initialData,
-  //   5: initTower,
-  6: buyTower,
-  7: attackTower,
-  //   8: refundTower,
-  //   9: upgradeTower,
-  //   12: removeMonster,
-  //   13: damageMonster,
-  //   14: monsterAttackBase,
-  //   15: checkForBreak,
-  //   20: gameEnd,
-  40: spawnMonster,
+ * 1: matchGame, // 현재는 안쓰는중
+ * 10: initialData,
+ * 6: buyTower,
+ * 7: attackTower,
+ * 40: spawnMonster,
+ * 50: monsterAttackBase,
+ *
  */
 export const sendEvent = (handlerId, payload) => {
   serverSocket.emit('event', {
