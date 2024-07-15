@@ -1,11 +1,12 @@
+import { game, monsterImages } from '../multi_game.js';
+
 export class Monster {
-  constructor(path, monsterImages, level, monsterID, maxHp, attackPower, monsterNumber = null) {
-    // 생성자 안에서 몬스터의 속성을 정의한다고 생각하시면 됩니다!
-    if (!path || path.length <= 0) {
+  constructor(level, monsterID, maxHp, attackPower, monsterNumber, path = game.monsterPath) {
+    if (game.monsterPath.length <= 0) {
       throw new Error('몬스터가 이동할 경로가 필요합니다.');
     }
 
-    this.monsterNumber = monsterNumber ?? Math.floor(Math.random() * monsterImages.length); // 몬스터 번호 (1 ~ 5. 몬스터를 추가해도 숫자가 자동으로 매겨집니다!)
+    this.monsterNumber = monsterNumber; // 몬스터 번호 (1 ~ 5. 몬스터를 추가해도 숫자가 자동으로 매겨집니다!)
     this.path = path; // 몬스터가 이동할 경로
     this.currentIndex = 0; // 몬스터가 이동 중인 경로의 인덱스
     this.x = path[0].x; // 몬스터의 x 좌표 (최초 위치는 경로의 첫 번째 지점)
@@ -51,5 +52,14 @@ export class Monster {
       ctx.fillStyle = 'white';
       ctx.fillText(`(레벨 ${this.level}) ${this.hp}/${this.maxHp}`, this.x, this.y - 5);
     }
+  }
+}
+
+export class OpponentMonster extends Monster {
+  constructor(level, monsterID, maxHp, attackPower, monsterNumber, path = game.opponentMonsterPath) {
+    if (game.opponentMonsterPath.length <= 0) {
+      throw new Error('상대 몬스터가 이동할 경로가 필요합니다.');
+    }
+    super(level, monsterID, maxHp, attackPower, monsterNumber, path);
   }
 }

@@ -1,18 +1,17 @@
 const users = [];
 
 export const addUser = (userId, init, socket) => {
-  console.log('Received init object:', init);
+  console.log(userId, '유저 정보 생성');
   const newUser = {
     userId: userId,
     userGold: init.data.userGold,
     baseHp: init.data.baseHp,
     towerCost: init.data.towerCost,
-    numOfInitialTowers: init.data.numOfInitialTowers,
     monsterLevel: init.data.monsterLevel,
     monsterSpawnInterval: init.data.monsterSpawnInterval,
     score: init.data.score,
     highScore: 0,
-    socketId: socket.id,
+    socketId: socket,
   };
   users[userId] = newUser;
 };
