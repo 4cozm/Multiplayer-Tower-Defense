@@ -1,8 +1,9 @@
-import { getGameAssets } from '../init/assets.js'; // 임의로 작성
-import { getTower, setAttackTower, setRefundTower, setTower } from '../models/tower.model.js';
+import { gameAssets } from '../init/assets.js';
+import { getTower, setTowerAttackLog, setRefundTower, setTower } from '../models/tower.model.js';
 import { getUserById } from '../models/user.model.js';
 import { v4 } from 'uuid';
 import findOpponent from '../util/find.opponent.js';
+import { getMonsterById } from '../models/monster.model.js';
 
 export const buyTower = (userId, payload, socket, io) => {
   //타워의 가격 비교
@@ -34,43 +35,53 @@ export const buyTower = (userId, payload, socket, io) => {
     y,
     uuid,
   });
+  const power = 40; // 1레벨 타워의 공격력 정보
 
   //타워의 데이터 저장
-  setTower(userId, x, y, 1, uuid, serverTime);
+  const tower = setTower(userId, x, y, 1, uuid, power, serverTime);
+  console.log('타워 구입됨', tower.towerId);
 
   return { status: 'success', message: '타워 구매 완료' };
 };
 
-export const attackTower = (userId, payload) => {
-  const towers = getTower(userId);
-
-  //타워의 데이터 찾기 현재 때린 타워의 ID를 기반으로 저장된 타워를 찾는다.
-  const tower = towers.find((data) => data.id === payload.towerId);
-
-  //해당 Id의 타워가 존재하는지 체크
-  if (!tower) {
-    return { status: 'fail', message: 'There is No Tower' };
-  }
-
-  // 해당 위치의 타워가 존재하는지 체크
-  if (tower.positon.x != payload.towerpos.x && tower.position.y != payload.towerpos.y) {
-    return { status: 'fail', message: 'Position is Not Matching' };
-  }
-
-  const towerdistance = Math.sqrt(
-    Math.pow(tower.towerpos.x - monster.x, 2) + Math.pow(tower.towerpos.y - monster.y, 2),
-  );
-
-  //타워의 사거리 체크
-  if (payload.towerRange <= towerdistance) {
-    return { status: 'fail', message: 'Tower range is not right' };
-  }
-
+export const attackTower = (userId, payload, socket, io) => {
+  const { towerId, monsterId } = payload;
   const serverTime = Date.now(); // 현재 타임스탬프
 
-  setAttackTower(userId, payload.towerId, serverTime);
+  const opponent = findOpponent(socket);
 
-  return { status: 'success', message: 'towerattack' };
+  const tower = getTower(userId, towerId);
+  //타워의 데이터 찾기 현재 때린 타워의 ID를 기반으로 저장된 타워를 찾는다.
+  if (!tower) {
+    //해당 Id의 타워가 존재하는지 체크
+    console.error('타워 정보를 찾지 못했습니다', tower);
+    return;
+  }
+
+  const monster = getMonsterById(userId, monsterId);
+  //몬스터 정보도 가지고 온다
+
+  if (!monster) {
+    //해당 ID의 몬스터가 존재하는지 체크
+    console.log('몬스터 정보가 존재하지 않습니다. 공격을 무효화 합니다');
+    return;
+  }
+
+  //타워 -> 몬스터 공격처리 및 사망처리
+  monster.hp = monster.hp - tower.power;
+  if (monster.hp < 0) {
+    //사망처리
+    socket.emit('monsterDead', { monsterId: monsterId });
+    io.to(opponent).emit('opponentMonsterDead', { monsterId: monsterId });
+  } else {
+    // 데미지 이벤트 전송
+    socket.emit('towerAttack', { monsterId: monsterId, hp: monster.hp });
+    io.to(opponent).emit('opponentTowerAttack', { monsterId: monsterId });
+  }
+
+  setTowerAttackLog(userId, towerId, monsterId, tower.power, serverTime); //공격에 대한 정보를 서버에 저장
+
+  return { status: 'success', message: 'towerAttack' };
 };
 
 export const refundTower = (userId, payload, socket) => {
@@ -106,7 +117,6 @@ export const refundTower = (userId, payload, socket) => {
 };
 
 export const upgradeTower = (userId, payload, socket) => {
-  const { towerData } = getGameAssets();
   const towers = getTower(userId);
 
   //타워의 데이터 찾기 현재 때린 타워의 ID를 기반으로 저장된 타워를 찾는다.

@@ -5,7 +5,7 @@ import Game from './class/Game.js';
 import eventHandler from './handlers/index.js';
 
 if (!localStorage.getItem('token')) {
-  alert('로그인이 필요합니다.');
+  alert('로그인이 필요합니다.token1번이 없습니다');
   location.href = '/login.html';
 }
 
@@ -196,8 +196,7 @@ function gameLoop() {
         game.monsters.splice(i, 1);
       }
     } else {
-      // TODO. 몬스터 사망 이벤트 전송
-      game.monsters.splice(i, 1);
+      // TODO. 몬스터 사망 이벤트 전송 => 사망 이벤트도 서버에서 처리해줌
     }
   }
 
@@ -335,6 +334,21 @@ Promise.all([
   serverSocket.on('opponentSpawnMonster', (data) => {
     eventHandler.opponentSpawnMonster(data);
   });
+  //몬스터 처치 이벤트
+  serverSocket.on('monsterDead', (data) => {
+    eventHandler.monsterDead(data);
+  });
+  serverSocket.on('opponentMonsterDead', (data) => {
+    eventHandler.opponentMonsterDead(data);
+  });
+
+  //타워 공격 이벤트
+  serverSocket.on('towerAttack', (data) => {
+    eventHandler.towerAttack(data);
+  });
+  serverSocket.on('opponentTowerAttack', (data) => {
+    eventHandler.opponentTowerAttack(data);
+  });
 
   //에러 이벤트
   serverSocket.on('error', (errorResponse) => {
@@ -343,15 +357,21 @@ Promise.all([
 });
 
 /**
- * 1:matchGame :
- * 6:buyTower : 타워의 x,y 좌표
- *
- *
- *
- *
- * 999:connectionTest
+  1: matchGame, //현재는 안쓰는중
+  10: initialData,
+  //   5: initTower,
+  6: buyTower,
+  7: attackTower,
+  //   8: refundTower,
+  //   9: upgradeTower,
+  //   12: removeMonster,
+  //   13: damageMonster,
+  //   14: monsterAttackBase,
+  //   15: checkForBreak,
+  //   20: gameEnd,
+  40: spawnMonster,
  */
-const sendEvent = (handlerId, payload) => {
+export const sendEvent = (handlerId, payload) => {
   serverSocket.emit('event', {
     userId: game.userId,
     clientVersion: CLIENT_VERSION,
