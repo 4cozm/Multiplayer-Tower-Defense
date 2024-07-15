@@ -1,8 +1,8 @@
 import { getGameAssets } from '../init/assets.js';
-import { addMonster, getSpawnMonster, removeMonster } from '../models/monster.model.js';
+import { addMonster, getMonsterById, getSpawnMonster, removeMonster } from '../models/monster.model.js';
 import { setBaseHp, getBaseHp } from '../models/monster.model.js';
-import { setLevel, getLevel } from '../models/monster.model.js';
-import { getUserById } from '../models/user.model.js';
+
+import { getUser, getUserById } from '../models/user.model.js';
 import { v4 as uuidv4 } from 'uuid';
 import findOpponent from '../util/find.opponent.js';
 
@@ -10,14 +10,15 @@ export const spawnMonster = (userId, _, socket, io) => {
   const opponent = findOpponent(socket);
   const { levelsData } = getGameAssets();
 
-  const stage = getLevel(userId);
+  const user = getUserById(userId);
+  const userLevel = user.level;
 
-  const levelData = levelsData.data.find((data) => data.stage === stage);
+  const levelData = levelsData.data.find((data) => data.level === userLevel);
 
   if (!levelData) {
     throw new Error('해당 레벨을 찾을 수 없습니다.');
   }
-  const { stage: monsterLevel, hp: monsterHp, power: monsterPower } = levelData;
+  const { level: monsterLevel, hp: monsterHp, power: monsterPower } = levelData;
   const monsterID = uuidv4();
   const monsterNumber = Math.floor(Math.random() * 5);
 
@@ -29,53 +30,40 @@ export const spawnMonster = (userId, _, socket, io) => {
 
 export const monsterAttackBase = (userId, payload, socket, io) => {
   const opponent = findOpponent(socket);
-  let isWin = true;
 
   const { monsterID } = payload;
 
-  let baseHp = getBaseHp(userId);
+  const user = getUserById(userId);
 
-  const monsterInfo = getSpawnMonster(userId)[monsterID];
+  const monsterInfo = getMonsterById(userId, monsterID);
   if (!monsterInfo) {
     throw new Error('몬스터 정보를 찾을 수 없습니다.');
   }
-  baseHp -= monsterInfo.power;
-  console.log('baseHp', baseHp);
+  user.baseHp -= monsterInfo.power;
 
-  setBaseHp(userId, baseHp);
   removeMonster(userId, monsterID);
 
-  if (baseHp <= 0) {
-    isWin = false;
+  socket.emit('updateGameState', { baseHp: user.baseHp }); //기지 체력이 0이 된 정보를 받고 게임오버나 승리 메세지를 받아야 할 것 같습니다.
 
-    socket.emit('gameOver', { isWin });
+  if (user.baseHp <= 0) {
+    socket.emit('gameOver', { isWin: false });
     io.to(opponent).emit('gameOver', { isWin: true });
   }
-
-  socket.emit('updateGameState', { baseHp });
 };
 
-export const killMonster = (userId, payload, socket) => {
-  const { monsterID } = payload;
-  const monsterInfo = getSpawnMonster(userId)[monsterID];
-  if (!monsterInfo) {
-    throw new Error('몬스터 정보를 찾을 수 없습니다.');
-  }
+export const killMonster = (userId, socket) => {
+  const user = getUserById(userId); //유저 객체를 가져옴
+  user.score += 100;
 
-  const userGameState = getUserById(userId);
-  userGameState.score += 100;
-
-  if (userGameState.score % 2000 === 0) {
-    userGameState.userGold += 1000;
-    userGameState.stage += 1;
-
-    setLevel(userId, userGameState.stage);
+  if (user.score % 2000 === 0) {
+    user.userGold += 1000;
+    user.stage += 1;
   }
 
   socket.emit('updateGameState', {
-    score: userGameState.score,
-    userGold: userGameState.userGold,
-    monsterLevel: userGameState.stage,
+    score: user.score,
+    userGold: user.userGold,
+    monsterLevel: user.stage,
   });
 };
 

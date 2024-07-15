@@ -1,5 +1,6 @@
+import { sendEvent } from '../multi_game.js';
 export class Tower {
-  constructor(x, y, uuid) {
+  constructor(x, y, uuid, isOpponent = true) {
     // 생성자 안에서 타워들의 속성을 정의한다고 생각하시면 됩니다!
     this.x = x; // 타워 이미지 x 좌표
     this.y = y; // 타워 이미지 y 좌표
@@ -11,6 +12,7 @@ export class Tower {
     this.beamDuration = 0; // 타워 광선 지속 시간
     this.target = null; // 타워 광선의 목표
     this.uuid = uuid; // 타워의 고유 ID
+    this.isOpponent = isOpponent; // 아군 타워 생성인지, 적 타워 생성인지 확인
   }
 
   draw(ctx, towerImage) {
@@ -29,8 +31,13 @@ export class Tower {
 
   attack(monster) {
     // 타워가 타워 사정거리 내에 있는 몬스터를 공격하는 메소드이며 사정거리에 닿는지 여부는 game.js에서 확인합니다.
+
     if (this.cooldown <= 0) {
-      monster.hp -= this.attackPower;
+      if (!this.isOpponent) {
+        //적 포탑이 단지 그림을 그리기 위해 인스턴스에 접근하는지 확인 여부
+        sendEvent(7, { towerId: this.uuid, monsterId: monster.monsterID });
+        monster.hp -= this.attackPower;
+      }
       this.cooldown = 180; // 3초 쿨타임 (초당 60프레임)
       this.beamDuration = 30; // 광선 지속 시간 (0.5초)
       this.target = monster; // 광선의 목표 설정
