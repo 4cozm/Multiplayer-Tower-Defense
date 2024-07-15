@@ -1,10 +1,12 @@
 import { matchGame } from './match.handler.js';
 import initialData from './init.handler.js';
-import { spawnMonster } from './monster.handler.js';
+
 import { buyTower, attackTower } from './tower.handler.js';
+import { monsterAttackBase, spawnMonster } from './monster.handler.js';
+import { buyTower } from './tower.handler.js';
 
 const handlerMappings = {
-  1: matchGame, //현재는 안쓰는중
+  1: matchGame, // 현재는 안쓰는중
   10: initialData,
   //   5: initTower,
   6: buyTower,
@@ -15,8 +17,9 @@ const handlerMappings = {
   //   13: damageMonster,
   //   14: monsterAttackBase,
   //   15: checkForBreak,
-  //   20: gameEnd,
+  // 20: endGame,
   40: spawnMonster,
+  50: monsterAttackBase,
 };
 
 export default handlerMappings;
