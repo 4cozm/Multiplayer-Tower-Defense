@@ -51,7 +51,7 @@ export const attackTower = (userId, payload, socket, io) => {
   const opponent = findOpponent(socket);
 
   const tower = getTower(userId, towerId);
-  //타워의 데이터 찾기 현재 때린 타워의 ID를 기반으로 저장된 타워를 찾는다.
+  //타워의 데이터 찾기. 현재 때린 타워의 ID를 기반으로 저장된 타워를 찾는다.
   if (!tower) {
     //해당 Id의 타워가 존재하는지 체크
     console.error('타워 정보를 찾지 못했습니다', tower);
@@ -76,7 +76,7 @@ export const attackTower = (userId, payload, socket, io) => {
   } else {
     // 데미지 이벤트 전송
     socket.emit('towerAttack', { monsterId: monsterId, hp: monster.hp });
-    io.to(opponent).emit('opponentTowerAttack', { monsterId: monsterId });
+    io.to(opponent).emit('opponentTowerAttack', { monsterId: monsterId, towerId: tower.towerId });
   }
 
   setTowerAttackLog(userId, towerId, monsterId, tower.power, serverTime); //공격에 대한 정보를 서버에 저장

@@ -5,7 +5,7 @@ import { towerImage } from '../../multi_game.js';
 
 export const makeTower = (data, game) => {
   const { x, y, uuid } = data;
-  const tower = new Tower(x, y, uuid);
+  const tower = new Tower(x, y, uuid, false);
   game.towers.push(tower);
   tower.draw(ctx, towerImage);
 
@@ -14,7 +14,8 @@ export const makeTower = (data, game) => {
 
 export const makeOpponentTower = (data, game) => {
   const { x, y, uuid } = data;
-  const tower = new Tower(x, y, uuid);
+  const tower = new Tower(x, y, uuid, true);
+  console.log('상대방 타워 생성됨,', tower);
   game.opponentTowers.push(tower);
   tower.draw(ctx, towerImage);
 };
