@@ -11,7 +11,7 @@ export const spawnMonster = (userId, _, socket, io) => {
   const { levelsData } = getGameAssets();
 
   const user = getUserById(userId);
-  const userLevel = user.level;
+  const userLevel = user.monsterLevel;
 
   const levelData = levelsData.data.find((data) => data.level === userLevel);
 
@@ -55,15 +55,16 @@ export const killMonster = (userId, socket) => {
   const user = getUserById(userId); //유저 객체를 가져옴
   user.score += 100;
 
-  if (user.score % 2000 === 0) {
+  if (user.score % 1000 === 0) {
+    // 테스트용
     user.userGold += 1000;
-    user.stage += 1;
+    user.monsterLevel += 1;
   }
 
   socket.emit('updateGameState', {
     score: user.score,
     userGold: user.userGold,
-    monsterLevel: user.stage,
+    monsterLevel: user.monsterLevel,
   });
 };
 
