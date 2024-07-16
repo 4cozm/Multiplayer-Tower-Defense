@@ -32,6 +32,7 @@ export class Game {
     this.opponentBasePosition = null; // 상대방 기지 좌표
     this.opponentMonsters = []; // 상대방 몬스터 목록
     this.opponentTowers = []; // 상대방 타워 목록
+    this.opponentDeleteQueue = []; //동기화에 오류가 생겨 미처 제거되지 못한 몬스터
 
     this.isInitGame = false;
   }
