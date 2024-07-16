@@ -1,7 +1,7 @@
 import { game, monsterImages } from '../multi_game.js';
 
 export class Monster {
-  constructor(level, monsterID, maxHp, attackPower, monsterNumber, path = game.monsterPath) {
+  constructor(level, monsterID, maxHp = 100, attackPower, monsterNumber, path = game.monsterPath) {
     if (game.monsterPath.length <= 0) {
       throw new Error('몬스터가 이동할 경로가 필요합니다.');
     }
@@ -57,7 +57,7 @@ export class Monster {
 }
 
 export class OpponentMonster extends Monster {
-  constructor(level, monsterID, maxHp, attackPower, monsterNumber, path = game.opponentMonsterPath) {
+  constructor(level, monsterID, maxHp = 100, attackPower, monsterNumber, path = game.opponentMonsterPath) {
     if (game.opponentMonsterPath.length <= 0) {
       throw new Error('상대 몬스터가 이동할 경로가 필요합니다.');
     }

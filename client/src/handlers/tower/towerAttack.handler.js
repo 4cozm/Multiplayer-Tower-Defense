@@ -25,7 +25,7 @@ export const opponentTowerAttack = (data, game) => {
     console.error('적 타워 공격 처리를 실행할 수 없습니다 타워 정보 없음:', tower);
   }
   const monster = game.opponentMonsters.find((item) => {
-    return (item.monsterID = monsterId);
+    return (item.monsterID == monsterId);
   });
   if (!monster) {
     console.error('적 타워 공격 처리를 실행할 수 없습니다 몬스터 정보 없음:', monster);

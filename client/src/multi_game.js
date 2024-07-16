@@ -160,15 +160,21 @@ function gameLoop() {
   ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height); // 배경 이미지 다시 그리기
   drawPath(game.monsterPath, ctx); // 경로 다시 그리기
 
-  ctx.font = '25px Times New Roman';
-  ctx.fillStyle = 'skyblue';
-  ctx.fillText(`최고 기록: ${game.highScore}`, 100, 50); // 최고 기록 표시
+  ctx.font = '25px "Trebuchet MS"';
+  ctx.fillStyle = 'tomato';
+  ctx.fillText(`전체 최고 기록: ${game.highScore}`, 100, 50); // 최고 기록 표시
+  ctx.fillStyle = 'aqua';
+  ctx.fillText(`나의 최고 기록: ${game.userHighScore}`, 100, 100); // 개인 최고 기록 표시
   ctx.fillStyle = 'white';
-  ctx.fillText(`점수: ${game.score}`, 100, 100); // 현재 스코어 표시
+  ctx.fillText(`점수: ${game.score}`, 100, 150); // 현재 스코어 표시
   ctx.fillStyle = 'yellow';
-  ctx.fillText(`골드: ${game.userGold}`, 100, 150); // 골드 표시
+  ctx.fillText(`골드: ${game.userGold}`, 100, 200); // 골드 표시
   ctx.fillStyle = 'black';
-  ctx.fillText(`현재 레벨: ${game.monsterLevel}`, 100, 200); // 최고 기록 표시
+  ctx.fillText(`현재 레벨: ${game.monsterLevel}`, 100, 250); // 최고 기록 표시
+  ctx.fillStyle = 'mintcream';
+  ctx.fillText(`나의 게임 랭킹: ${game.userRank}위`, 350, 50); // 나의 랭킹 표시
+  ctx.fillStyle = 'mintcream';
+  ctx.fillText(`상대방 게임 랭킹: ${game.opponentRank}위`, 350, 100); // 상대방 랭킹 표시
 
   // 타워 그리기 및 몬스터 공격 처리
   game.towers.forEach((tower) => {
@@ -194,8 +200,8 @@ function gameLoop() {
     if (monster.hp > 0) {
       const Attacked = monster.move(game.base);
       if (Attacked) {
-        const attackedSound = new Audio('sounds/attacked.wav');
-        attackedSound.volume = 0.1;
+        const attackedSound = new Audio('sounds/attacked.mp3');
+        attackedSound.volume = 0.05;
         attackedSound.play();
         sendEvent(50, { monsterID: monster.monsterID });
         game.monsters.splice(i, 1); //기지 충돌시 삭제는 클라이언트 주도
@@ -266,7 +272,9 @@ Promise.all([
     // 상대가 매치되면 3초 뒤 게임 시작
     progressBarMessage.textContent = '게임이 3초 뒤에 시작됩니다.';
     game = new Game(data.userId); //유저,상대방 정보가 담긴 인스턴스 객체
-
+    const startGame = new Audio('sounds/start.mp3');
+    startGame.volume = 0.1;
+    startGame.play();
     let progressValue = 0;
     const progressInterval = setInterval(() => {
       progressValue += 10;
@@ -299,13 +307,12 @@ Promise.all([
   });
 
   serverSocket.on('updateGameState', (syncData) => {
-    console.log('Received sync data:', syncData);
     eventHandler.updateGameState(syncData);
   });
 
   serverSocket.on('gameOver', (data) => {
-    const winSound = new Audio('sounds/win.wav');
-    const loseSound = new Audio('sounds/lose.wav');
+    const winSound = new Audio('sounds/win.mp3');
+    const loseSound = new Audio('sounds/lose.mp3');
     winSound.volume = 0.01;
     loseSound.volume = 0.1;
 
@@ -314,12 +321,15 @@ Promise.all([
       winSound.play().then(() => {
         alert('당신이 게임에서 승리했습니다!');
         // TODO. 게임 종료 이벤트 전송
+        sendEvent(99);
         location.reload();
       });
     } else if (data.OpponentForfeit) {
+      bgm.pause();
       winSound.play().then(() => {
         alert('상대방이 게임에서 나갔습니다. 당신이 이겼습니다...');
         // TODO. 게임 종료 이벤트 전송
+        sendEvent(99);
         location.reload();
       });
     } else {
@@ -327,6 +337,7 @@ Promise.all([
       loseSound.play().then(() => {
         alert('아쉽지만 대결에서 패배하셨습니다! 다음 대결에서는 꼭 이기세요!');
         // TODO. 게임 종료 이벤트 전송
+        sendEvent(99);
         location.reload();
       });
     }

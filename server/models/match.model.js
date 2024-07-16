@@ -53,6 +53,9 @@ export const deletePlayerFromMatchModel = (socket) => {
 
 export const addMatchedPlayers = (player1, player2) => {
   matchedPlayers.push(player1, player2);
+};
+
+export const getMatchedPlayers = () => {
   return matchedPlayers;
 };
 

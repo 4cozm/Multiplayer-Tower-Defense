@@ -69,13 +69,14 @@ export const attackTower = (userId, payload, socket, io) => {
   }
 
   //타워 -> 몬스터 공격처리 및 사망처리
-  monster.hp = monster.hp - tower.power;
-  if (monster.hp < 0) {
+  monster.hp -= tower.power;
+  if (monster.hp <= 0) {
     //사망처리
     killMonster(userId, socket); //몬스터 사망시 점수,돈,레벨(스테이지) 변경해주는 함수
     removeMonster(userId, monsterId); //몬스터 제거시 배열에서 삭제하는 함수
     socket.emit('monsterDead', { monsterId: monsterId });
-    io.to(opponent).emit('opponentMonsterDead', { monsterId: monsterId });
+    io.to(opponent).emit('opponentTowerAttack', { monsterId: monsterId, towerId: tower.towerId });
+    io.to(opponent).emit('opponentMonsterDead', { monsterId: monsterId, timeStamp: payload.timeStamp });
   } else {
     // 데미지 이벤트 전송
     socket.emit('towerAttack', { monsterId: monsterId, hp: monster.hp });
@@ -83,8 +84,6 @@ export const attackTower = (userId, payload, socket, io) => {
   }
 
   setTowerAttackLog(userId, towerId, monsterId, tower.power, serverTime); //공격에 대한 정보를 서버에 저장
-
-  return { status: 'success', message: 'towerAttack' };
 };
 
 export const refundTower = (userId, payload, socket) => {
