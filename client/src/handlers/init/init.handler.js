@@ -11,6 +11,8 @@ const initializeGameState = (initialGameData, game) => {
   game.score = initialGameData.score;
   game.highScore = initialGameData.highScore;
   game.userHighScore = initialGameData.userHighScore;
+  game.userRank = initialGameData.userRank;
+  game.opponentRank = initialGameData.opponentRank;
 };
 
 export default initializeGameState;
