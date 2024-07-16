@@ -241,7 +241,7 @@ function initGame() {
   bgm.play();
 
   initMap(); // 맵 초기화 (배경, 몬스터 경로 그리기)
-
+  document.querySelector('#chat_open_btn').style.display = 'block'; //게임 시작 후 채팅창 버튼 생성
   setInterval(spawnMonster, game.monsterSpawnInterval); // 설정된 몬스터 생성 주기마다 몬스터 생성
   gameLoop(); // 게임 루프 최초 실행
   game.isInitGame = true;
@@ -376,6 +376,12 @@ Promise.all([
   //채팅 이벤트
   serverSocket.on('opponentEmoji', (data) => {
     eventHandler.opponentEmoji(data);
+  });
+
+  //채팅 입력
+  serverSocket.on('chat', (data) => {
+    console.log(data);
+    eventHandler.makeChat(data);
   });
 
   //에러 이벤트

@@ -24,6 +24,8 @@ export const matchGame = async (userId, socket, io) => {
     io.sockets.sockets.get(player1.socketId).join(roomName);
     io.sockets.sockets.get(player2.socketId).join(roomName);
 
+    console.log(roomName);
+
     // 클라이언트에 매치가 성사되었음을 알림
     io.to(player1.socketId).emit('matchFound', {
       userId: player1.userId,

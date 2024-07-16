@@ -2,9 +2,7 @@ import { addUser } from '../models/user.model.js';
 import { handleConnection, handleDisconnect, handlerEvent } from './helper.js';
 import { getGameAssets } from '../init/assets.js';
 import { matchGame } from './match.handler.js';
-import { ErrorCodes } from '../util/error/errorCodes.js';
-import CustomError from '../util/error/customError.js';
-import configs from '../util/config.js';
+
 
 const registerHandler = (io) => {
   io.on('connection', async (socket) => {
