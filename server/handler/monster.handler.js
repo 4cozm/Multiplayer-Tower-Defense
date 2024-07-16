@@ -1,8 +1,7 @@
 import { getGameAssets } from '../init/assets.js';
-import { addMonster, getMonsterById, getSpawnMonster, removeMonster } from '../models/monster.model.js';
-import { setBaseHp, getBaseHp } from '../models/monster.model.js';
+import { addMonster, getMonsterById, removeMonster } from '../models/monster.model.js';
 
-import { getUser, getUserById } from '../models/user.model.js';
+import { getUserById } from '../models/user.model.js';
 import { v4 as uuidv4 } from 'uuid';
 import findOpponent from '../util/find.opponent.js';
 
@@ -67,17 +66,3 @@ export const killMonster = (userId, socket) => {
     monsterLevel: user.monsterLevel,
   });
 };
-
-// export const damageMonster = (userId, payload) => {
-//   const { towerId, attackPower } = payload;
-
-//   const towers = getTower(userId);
-//   const tower = towers.find((tower) => tower.id === towerId);
-//   if (!tower) {
-//     return { status: 'fail', message: '존재하지 않는 타워입니다.' };
-//   }
-//   if (attackPower !== 40) {
-//     return { status: 'fail', message: '타워의 공격력이 잘못되었습니다.' };
-//   }
-//   return { status: 'success', message: '몬스터를 공격했습니다.' };
-// };
