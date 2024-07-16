@@ -29,3 +29,8 @@ export const getMaxHighScore = async () => {
 export const updateUserScore = async (score, id) => {
   await pools.USER_DB.query(SQL_QUERIES.UPDATE_USER_SCORE, [score, id]);
 };
+
+export const getUserRank = async (id) => {
+  const [rows] = await pools.USER_DB.query(SQL_QUERIES.GET_USER_RANK, [id]);
+  return rows[0]?.rank || null;
+};

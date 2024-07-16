@@ -160,17 +160,21 @@ function gameLoop() {
   ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height); // 배경 이미지 다시 그리기
   drawPath(game.monsterPath, ctx); // 경로 다시 그리기
 
-  ctx.font = '25px Times New Roman';
-  ctx.fillStyle = 'skyblue';
-  ctx.fillText(`나의 최고 기록: ${game.userHighScore}`, 100, 50); // 개인 최고 기록 표시
-  ctx.fillStyle = 'red';
-  ctx.fillText(`전체 최고 기록: ${game.highScore}`, 100, 100); // 최고 기록 표시
+  ctx.font = '25px "Trebuchet MS"';
+  ctx.fillStyle = 'tomato';
+  ctx.fillText(`전체 최고 기록: ${game.highScore}`, 100, 50); // 최고 기록 표시
+  ctx.fillStyle = 'aqua';
+  ctx.fillText(`나의 최고 기록: ${game.userHighScore}`, 100, 100); // 개인 최고 기록 표시
   ctx.fillStyle = 'white';
   ctx.fillText(`점수: ${game.score}`, 100, 150); // 현재 스코어 표시
   ctx.fillStyle = 'yellow';
   ctx.fillText(`골드: ${game.userGold}`, 100, 200); // 골드 표시
   ctx.fillStyle = 'black';
   ctx.fillText(`현재 레벨: ${game.monsterLevel}`, 100, 250); // 최고 기록 표시
+  ctx.fillStyle = 'mintcream';
+  ctx.fillText(`나의 게임 랭킹: ${game.userRank}위`, 350, 50); // 나의 랭킹 표시
+  ctx.fillStyle = 'mintcream';
+  ctx.fillText(`상대방 게임 랭킹: ${game.opponentRank}위`, 350, 100); // 상대방 랭킹 표시
 
   // 타워 그리기 및 몬스터 공격 처리
   game.towers.forEach((tower) => {
@@ -321,6 +325,7 @@ Promise.all([
         location.reload();
       });
     } else if (data.OpponentForfeit) {
+      bgm.pause();
       winSound.play().then(() => {
         alert('상대방이 게임에서 나갔습니다. 당신이 이겼습니다...');
         // TODO. 게임 종료 이벤트 전송

@@ -6,4 +6,12 @@ export const SQL_QUERIES = {
   GET_HIGH_SCORE_BY_USER_ID: 'SELECT high_score FROM user WHERE id = ?',
   GET_MAX_HIGH_SCORE: 'SELECT MAX(high_score) AS high_score FROM user',
   UPDATE_USER_SCORE: 'UPDATE user SET high_score = ? WHERE id = ?',
+  GET_USER_RANK: `
+    SELECT id, high_score, FIND_IN_SET(high_score, (
+      SELECT GROUP_CONCAT(high_score ORDER BY high_score DESC)
+      FROM user
+    )) AS \`rank\`
+    FROM user 
+    WHERE id = ?
+  `,
 };

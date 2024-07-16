@@ -1,6 +1,6 @@
 import { getGameAssets } from '../init/assets.js';
 import findOpponent from '../util/find.opponent.js';
-import { getMaxHighScore, getHighScoreByUserId } from '../db/user/user.db.js';
+import { getMaxHighScore, getHighScoreByUserId, getUserRank } from '../db/user/user.db.js';
 import { getMatchedPlayers } from '../models/match.model.js';
 
 export const initialData = async (userId, payload, socket, io) => {
@@ -47,11 +47,13 @@ export const initialData = async (userId, payload, socket, io) => {
   const { init } = getGameAssets();
   const maxHighScore = await getMaxHighScore();
   const highScoreByUserId = await getHighScoreByUserId(userId);
+  const userRank = await getUserRank(userId);
 
   const matchedPlayers = getMatchedPlayers();
   const opponentPlayer = matchedPlayers.find((player) => player.userId !== userId);
   const opponentUserId = opponentPlayer ? opponentPlayer.userId : null;
   const opponentHighScoreByUserId = await getHighScoreByUserId(opponentUserId);
+  const opponentRank = await getUserRank(opponentUserId);
 
   const initialGameData = {
     monsterPath,
@@ -66,6 +68,8 @@ export const initialData = async (userId, payload, socket, io) => {
     score: init.data.score,
     highScore: maxHighScore,
     userHighScore: highScoreByUserId,
+    userRank: userRank,
+    opponentRank: opponentRank,
   };
 
   console.log('initialGameData', initialGameData);
@@ -85,6 +89,8 @@ export const initialData = async (userId, payload, socket, io) => {
     score: init.data.score,
     highScore: maxHighScore,
     userHighScore: opponentHighScoreByUserId,
+    userRank: opponentRank,
+    opponentRank: userRank,
   });
 };
 

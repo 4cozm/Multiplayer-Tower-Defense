@@ -18,6 +18,7 @@ export class Game {
     this.score = 0; // 게임 점수
     this.highScore = 0; // 기존 최고 점수
     this.userHighScore = 0; // 유저 최고 점수
+    this.userRank = 0; // 유저 순위
 
     this.monsterID = 0;
     this.monsterHp = 0;
@@ -33,6 +34,7 @@ export class Game {
     this.opponentMonsters = []; // 상대방 몬스터 목록
     this.opponentTowers = []; // 상대방 타워 목록
     this.opponentDeleteQueue = []; //동기화에 오류가 생겨 미처 제거되지 못한 몬스터
+    this.opponentRank = 0; // 상대방 순위
 
     this.isInitGame = false;
   }
