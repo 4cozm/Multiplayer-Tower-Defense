@@ -107,6 +107,13 @@ function getRandomPositionNearPath(maxDistance) {
   const offsetX = (Math.random() - 0.5) * 2 * maxDistance;
   const offsetY = (Math.random() - 0.5) * 2 * maxDistance;
 
+  if (posY + offsetY >= canvas.height - 75) {
+    return {
+      x: posX + offsetX,
+      y: posY - 50,
+    };
+  }
+
   return {
     x: posX + offsetX,
     y: posY + offsetY,
@@ -128,6 +135,7 @@ function placeNewTower() {
     return;
   }
   const { x, y } = getRandomPositionNearPath(200);
+  console.log(x, y);
   //서버로 포탑 좌표 전달
   sendEvent(6, { x, y });
 }
