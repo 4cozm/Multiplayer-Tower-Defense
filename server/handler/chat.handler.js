@@ -10,10 +10,7 @@ export const emoji = (_, payload, socket, io) => {
 
 export const requestChat = (userId, payload, socket, io) => {
   const room = findRoom(socket);
+  const addedChat = addChat(userId, payload);
 
-  console.log('message: !!!!!!!!!!!', payload);
-
-  addChat(userId, payload);
-
-  io.to(room).emit('chat', { userId: userId, message: payload });
+  io.to(room).emit('chat', { userId: userId, message: addedChat });
 };

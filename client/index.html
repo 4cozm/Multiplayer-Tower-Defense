@@ -99,6 +99,7 @@
         border-radius: 10px;
         padding: 10px;
         cursor: pointer;
+        display: none;
       }
       #chat_container {
         width: 300px;
@@ -153,7 +154,8 @@
         padding-left: 15px;
       }
       .chat_right {
-        margin-left: 180px;
+        max-width: 90%;
+        text-align: right;
       }
       #chat_input {
         width: 230px;
@@ -199,8 +201,6 @@
         <p class="chat">ㅤ</p>
         <p class="chat">ㅤ</p>
         <!-- 공백 문자 있습니당 지우면 안돼용-->
-        <p class="chat">이름 : 내용</p>
-        <p class="chat chat_right">이름 : 내용</p>
       </div>
       <div id="chat_footer">
         <input id="chat_input" placeholder="내용을 입력하세요" />
@@ -231,14 +231,6 @@
         document.querySelector('.button-container').style.display = 'none';
         document.getElementById('progressBarContainer').style.display = 'block';
         import('./src/multi_game2.js');
-      });
-
-      document.querySelector('#chat_x').addEventListener('click', () => {
-        document.querySelector('#chat_container').style.display = 'none';
-      });
-
-      document.querySelector('#chat_open_btn').addEventListener('click', () => {
-        document.querySelector('#chat_container').style.display = 'flex';
       });
     </script>
     <!-- <script type="module" src="./src/handlers/chat/chat.handler.js"></script> -->

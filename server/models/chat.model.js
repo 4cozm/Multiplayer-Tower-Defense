@@ -15,11 +15,11 @@ export const addChat = (userId, message) => {
     );
   }
 
-  message = checkChat(message);
-  const chat = { userId, message };
+  const checkedMessage = checkChat(message);
+  const chat = { userId, checkedMessage };
 
   chatModel.push(chat);
-  return chatModel;
+  return checkedMessage;
 };
 
 export const getChat = () => {
@@ -30,8 +30,8 @@ export const getChat = () => {
 function checkChat(message) {
   for (let i = 0; i < filterChatModel.length; i++) {
     if (message.includes(filterChatModel[i])) {
-      message.replaceAll(filterChatModel[i], filterModel[i]);
-      console.log('비속어 감지');
+      message = message.replaceAll(filterChatModel[i], filterModel[i]);
+      console.log('비속어 감지 변경:', message);
     }
   }
 
