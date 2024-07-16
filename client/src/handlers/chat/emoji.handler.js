@@ -29,7 +29,7 @@ export const moveEmoji = (position) => {
 document.addEventListener('keydown', (event) => {
   if (process) return; // 프로세스가 진행 중이면 중복 실행 방지
   const keyName = event.key;
-  if (!['1', '2', '3', '4'].includes(keyName)) return; // 키가 1, 2, 3, 4가 아니면 반환
+  if (!['1', '2', '3', '4', '5', '6', '7', '8', '9'].includes(keyName)) return; // 키가 1, 2, 3, 4가 아니면 반환
   switch (keyName) {
     case '1':
       myImage.src = 'images/emoji/1.png';
