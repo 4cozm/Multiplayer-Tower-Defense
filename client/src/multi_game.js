@@ -196,8 +196,8 @@ function gameLoop() {
     if (monster.hp > 0) {
       const Attacked = monster.move(game.base);
       if (Attacked) {
-        const attackedSound = new Audio('sounds/attacked.wav');
-        attackedSound.volume = 0.1;
+        const attackedSound = new Audio('sounds/attacked.mp3');
+        attackedSound.volume = 0.05;
         attackedSound.play();
         sendEvent(50, { monsterID: monster.monsterID });
         game.monsters.splice(i, 1); //기지 충돌시 삭제는 클라이언트 주도
@@ -268,7 +268,9 @@ Promise.all([
     // 상대가 매치되면 3초 뒤 게임 시작
     progressBarMessage.textContent = '게임이 3초 뒤에 시작됩니다.';
     game = new Game(data.userId); //유저,상대방 정보가 담긴 인스턴스 객체
-
+    const startGame = new Audio('sounds/start.mp3');
+    startGame.volume = 0.1;
+    startGame.play();
     let progressValue = 0;
     const progressInterval = setInterval(() => {
       progressValue += 10;
@@ -305,8 +307,8 @@ Promise.all([
   });
 
   serverSocket.on('gameOver', (data) => {
-    const winSound = new Audio('sounds/win.wav');
-    const loseSound = new Audio('sounds/lose.wav');
+    const winSound = new Audio('sounds/win.mp3');
+    const loseSound = new Audio('sounds/lose.mp3');
     winSound.volume = 0.01;
     loseSound.volume = 0.1;
 
