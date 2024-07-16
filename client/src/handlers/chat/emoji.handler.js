@@ -47,6 +47,26 @@ document.addEventListener('keydown', (event) => {
       myImage.src = 'images/emoji/4.png';
       showEmoji();
       break;
+    case '5':
+      myImage.src = 'images/emoji/5.png';
+      showEmoji();
+      break;
+    case '6':
+      myImage.src = 'images/emoji/6.png';
+      showEmoji();
+      break;
+    case '7':
+      myImage.src = 'images/emoji/7.png';
+      showEmoji();
+      break;
+    case '8':
+      myImage.src = 'images/emoji/8.png';
+      showEmoji();
+      break;
+    case '9':
+      myImage.src = 'images/emoji/9.png';
+      showEmoji();
+      break;
   }
   sendEvent(100, { image: myImage.src });
 });
