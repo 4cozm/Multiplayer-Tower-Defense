@@ -68,6 +68,102 @@
           transform: rotate(360deg);
         }
       }
+
+      #emoji_container,
+      #opponent_emoji_container {
+        width: 200px;
+        height: auto;
+        position: absolute;
+        transform: translate(-50%, -50%);
+        z-index: 5;
+        opacity: 0;
+        transition: opacity 1s ease;
+        pointer-events: none;
+      }
+
+      #emoji,
+      #opponent_emoji {
+        max-width: 100%;
+        max-height: 100%;
+        width: auto;
+        height: auto;
+      }
+      #chat_open_btn {
+        position: fixed;
+        left: 10px;
+        bottom: 10px;
+        font-size: 20px;
+        font-weight: bold;
+        background-color: azure;
+        border: 1px solid black;
+        border-radius: 10px;
+        padding: 10px;
+        cursor: pointer;
+      }
+      #chat_container {
+        width: 300px;
+        height: 300px;
+        background-color: azure;
+        position: fixed;
+        left: 10px;
+        bottom: 10px;
+        display: none;
+        justify-content: space-between;
+        align-items: center;
+        flex-direction: column;
+        border-radius: 10px;
+      }
+      #chat_header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 290px;
+        height: 50px;
+        padding-left: 5px;
+        padding-right: 5px;
+        border-bottom: 1px solid skyblue;
+      }
+      #chat_header_message {
+        font-size: 20px;
+        font-weight: bold;
+      }
+      #chat_x {
+        max-width: 50%;
+        max-height: 50%;
+        cursor: pointer;
+      }
+      #chat_footer {
+        width: 100%;
+        display: flex;
+        justify-content: space-around;
+        border-top: 1px solid skyblue;
+        margin-bottom: 10px;
+        padding-top: 10px;
+      }
+      #chat_body {
+        overflow: scroll;
+        width: 100%;
+        height: 100%;
+      }
+      #chat_body::-webkit-scrollbar {
+        display: none; /* Hide scrollbar for WebKit browsers */
+      }
+
+      .chat {
+        padding-left: 15px;
+      }
+      .chat_right {
+        margin-left: 180px;
+      }
+      #chat_input {
+        width: 230px;
+        border: none;
+        background-color: bisque;
+      }
+      #chat_submit {
+        cursor: pointer;
+        font-size: 15px;
+      }
     </style>
   </head>
   <body>
@@ -86,6 +182,31 @@
     </div>
     <canvas id="gameCanvas" width="1500" height="680"></canvas>
     <canvas id="opponentCanvas" width="1500" height="680"></canvas>
+    <div id="emoji_container">
+      <img id="emoji" src="images/emoji/1.png" />
+    </div>
+    <div id="opponent_emoji_container">
+      <img id="opponent_emoji" src="images/emoji/1.png" />
+    </div>
+    <div id="chat_open_btn">채팅</div>
+    <div id="chat_container">
+      <div id="chat_header">
+        <p id="chat_header_message">채팅</p>
+        <img id="chat_x" src="images/x.png" />
+      </div>
+      <div id="chat_body">
+        <p class="chat">ㅤ</p>
+        <p class="chat">ㅤ</p>
+        <p class="chat">ㅤ</p>
+        <!-- 공백 문자 있습니당 지우면 안돼용-->
+        <p class="chat">이름 : 내용</p>
+        <p class="chat chat_right">이름 : 내용</p>
+      </div>
+      <div id="chat_footer">
+        <input id="chat_input" placeholder="내용을 입력하세요" />
+        <div id="chat_submit">보내기</div>
+      </div>
+    </div>
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
     <script type="module">
       document.getElementById('registerButton').addEventListener('click', () => {
@@ -111,6 +232,15 @@
         document.getElementById('progressBarContainer').style.display = 'block';
         import('./src/multi_game2.js');
       });
+
+      document.querySelector('#chat_x').addEventListener('click', () => {
+        document.querySelector('#chat_container').style.display = 'none';
+      });
+
+      document.querySelector('#chat_open_btn').addEventListener('click', () => {
+        document.querySelector('#chat_container').style.display = 'flex';
+      });
     </script>
   </body>
 </html>
+,
