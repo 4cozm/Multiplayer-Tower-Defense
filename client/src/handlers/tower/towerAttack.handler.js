@@ -30,6 +30,13 @@ export const opponentTowerAttack = (data, game) => {
   if (!monster) {
     console.error('적 타워 공격 처리를 실행할 수 없습니다 몬스터 정보 없음:', monster);
   }
+  const deltaX = tower.x - monster.x;
+  const deltaY = tower.y - monster.y;
+
+  // 억지로 너무 긴 공격은 보여주지 않음
+  if (Math.abs(deltaX) > 250 || Math.abs(deltaY) > 250) {
+    return;
+  }
   //레이저 빔 그림 그려줌
   tower.attack(monster);
 };

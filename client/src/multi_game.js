@@ -291,7 +291,6 @@ Promise.all([
   });
 
   serverSocket.on('updateGameState', (syncData) => {
-    console.log('Received sync data:', syncData);
     eventHandler.updateGameState(syncData);
   });
 
