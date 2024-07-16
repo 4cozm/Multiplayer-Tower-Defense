@@ -295,15 +295,20 @@ Promise.all([
 
   serverSocket.on('gameOver', (data) => {
     bgm.pause();
-    const { isWin } = data;
     const winSound = new Audio('sounds/win.wav');
     const loseSound = new Audio('sounds/lose.wav');
     winSound.volume = 0.01;
     loseSound.volume = 0.1;
 
-    if (isWin) {
+    if (data.isWin) {
       winSound.play().then(() => {
         alert('당신이 게임에서 승리했습니다!');
+        // TODO. 게임 종료 이벤트 전송
+        location.reload();
+      });
+    } else if (data.OpponentForfeit) {
+      winSound.play().then(() => {
+        alert('상대방이 게임에서 나갔습니다. 당신이 이겼습니다...');
         // TODO. 게임 종료 이벤트 전송
         location.reload();
       });
@@ -316,11 +321,11 @@ Promise.all([
     }
   });
 
-  // 게임 시작 도중 상대방이 나갔을 때 처리
-  serverSocket.on('opponentLeft', (data) => {
-    alert(data.message);
-    location.reload();
-  });
+  // // 게임 시작 도중 상대방이 나갔을 때 처리
+  // serverSocket.on('opponentLeft', (data) => {
+  //   alert(data.message);
+  //   location.reload();
+  // });
 
   //타워 구입 이벤트
   serverSocket.on('makeTower', (data) => {
