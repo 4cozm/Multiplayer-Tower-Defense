@@ -184,7 +184,7 @@ function gameLoop() {
   for (let i = game.monsters.length - 1; i >= 0; i--) {
     const monster = game.monsters[i];
     if (monster.hp > 0) {
-      const Attacked = monster.move();
+      const Attacked = monster.move(game.base);
       if (Attacked) {
         const attackedSound = new Audio('sounds/attacked.wav');
         attackedSound.volume = 0.1;
@@ -207,7 +207,7 @@ function gameLoop() {
   });
 
   game.opponentMonsters.forEach((monster) => {
-    monster.move();
+    monster.move(game.opponentBase);
     monster.draw(opponentCtx, true);
   });
 
