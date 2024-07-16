@@ -1,5 +1,5 @@
 import { CLIENT_VERSION } from '../constants.js';
-import { deletePlayerFromMatchModel, deleteMatchedPlayer } from '../models/match.model.js';
+import { deletePlayerFromMatchModel } from '../models/match.model.js';
 import { removeUser } from '../models/user.model.js';
 import handlerMappings from './handlerMapping.js';
 import configs from '../util/config.js';
@@ -8,7 +8,7 @@ import jwt from 'jsonwebtoken';
 
 export const handleDisconnect = (socket, io) => {
   deletePlayerFromMatchModel(socket); // 매칭 대기열에 있었다면 대기열에서 삭제
-  deleteMatchedPlayer(socket, io); // 매칭 이후 탈주 시
+  // deleteMatchedPlayer(socket, io); // 매칭 이후 탈주 시
   removeUser(socket.id); //서버에서 관리하는 유저 객체에서 삭제
   console.log('클라이언트 연결 해제됨', socket.id);
 };

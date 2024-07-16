@@ -321,11 +321,11 @@ Promise.all([
     }
   });
 
-  // // 게임 시작 도중 상대방이 나갔을 때 처리
-  // serverSocket.on('opponentLeft', (data) => {
-  //   alert(data.message);
-  //   location.reload();
-  // });
+  // 게임 시작 도중 상대방이 나갔을 때 처리
+  serverSocket.on('opponentLeft', (data) => {
+    alert(data.message);
+    location.reload();
+  });
 
   //타워 구입 이벤트
   serverSocket.on('makeTower', (data) => {

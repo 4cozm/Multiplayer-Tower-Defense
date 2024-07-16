@@ -1,6 +1,6 @@
 import { addMatch, getMatchPlayers, clearMatchPlayers } from '../models/match.model.js';
 import { v4 as uuid } from 'uuid';
-import { addMatchedPlayers } from '../models/match.model.js';
+// import { addMatchedPlayers } from '../models/match.model.js';
 
 export const matchGame = async (userId, socket, io) => {
   const matchArray = getMatchPlayers();
@@ -19,7 +19,7 @@ export const matchGame = async (userId, socket, io) => {
     const player1 = matchArray[0];
     const player2 = matchArray[1];
 
-    addMatchedPlayers(player1, player2);
+    // addMatchedPlayers(player1, player2);
 
     io.sockets.sockets.get(player1.socketId).join(roomName);
     io.sockets.sockets.get(player2.socketId).join(roomName);
@@ -32,5 +32,12 @@ export const matchGame = async (userId, socket, io) => {
       userId: player2.userId,
     });
     clearMatchPlayers();
+
+    const handlePlayerDisconnect = (socket) => {
+      io.to(roomName).emit('opponentLeft', { message: '상대방이 게임을 나갔습니다.' });
+    };
+
+    io.sockets.sockets.get(player1.socketId).on('disconnect', () => handlePlayerDisconnect(socket));
+    io.sockets.sockets.get(player2.socketId).on('disconnect', () => handlePlayerDisconnect(socket));
   }
 };
