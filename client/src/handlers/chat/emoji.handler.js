@@ -76,7 +76,6 @@ function opponentShowEmoji(src) {
 
   oppoEmoji.style.transition = 'opacity 1s ease';
   oppoEmoji.style.opacity = '1';
-  oppoEmoji.style.backgroundcolor = 'black';
 
   // 애니메이션 시작 후 즉시 opacity를 0으로 설정
   setTimeout(() => {
