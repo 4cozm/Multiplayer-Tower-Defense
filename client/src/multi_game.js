@@ -223,7 +223,7 @@ function initGame() {
 
   bgm = new Audio('sounds/bgm.mp3');
   bgm.loop = true;
-  bgm.volume = 0.2;
+  bgm.volume = 0.009;
   bgm.play();
 
   initMap(); // 맵 초기화 (배경, 몬스터 경로 그리기)
@@ -286,6 +286,8 @@ Promise.all([
       console.log('게임 초기화 데이터:', game, '출력시간', Date.now());
       initGame();
     }
+    eventHandler.opponentMoveEmoji(game.basePosition);
+    eventHandler.moveEmoji(game.opponentBasePosition);
   });
 
   serverSocket.on('updateGameState', (syncData) => {
@@ -350,6 +352,11 @@ Promise.all([
   });
   serverSocket.on('opponentTowerAttack', (data) => {
     eventHandler.opponentTowerAttack(data);
+  });
+
+  //채팅 이벤트
+  serverSocket.on('opponentEmoji', (data) => {
+    eventHandler.opponentEmoji(data);
   });
 
   //에러 이벤트

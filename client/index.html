@@ -68,6 +68,26 @@
           transform: rotate(360deg);
         }
       }
+
+      #emoji_container,
+      #opponent_emoji_container {
+        width: 200px;
+        height: auto;
+        position: absolute;
+        transform: translate(-50%, -50%);
+        z-index: 5;
+        opacity: 0;
+        transition: opacity 1s ease;
+        pointer-events: none;
+      }
+
+      #emoji,
+      #opponent_emoji {
+        max-width: 100%;
+        max-height: 100%;
+        width: auto;
+        height: auto;
+      }
     </style>
   </head>
   <body>
@@ -86,6 +106,12 @@
     </div>
     <canvas id="gameCanvas" width="1500" height="680"></canvas>
     <canvas id="opponentCanvas" width="1500" height="680"></canvas>
+    <div id="emoji_container">
+      <img id="emoji" src="images/emoji/1.png" />
+    </div>
+    <div id="opponent_emoji_container">
+      <img id="opponent_emoji" src="images/emoji/1.png" />
+    </div>
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
     <script type="module">
       document.getElementById('registerButton').addEventListener('click', () => {
