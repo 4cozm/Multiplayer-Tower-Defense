@@ -107,6 +107,13 @@ function getRandomPositionNearPath(maxDistance) {
   const offsetX = (Math.random() - 0.5) * 2 * maxDistance;
   const offsetY = (Math.random() - 0.5) * 2 * maxDistance;
 
+  if (posY + offsetY >= canvas.height - 75) {
+    return {
+      x: posX + offsetX,
+      y: posY - 50,
+    };
+  }
+
   return {
     x: posX + offsetX,
     y: posY + offsetY,
@@ -128,6 +135,7 @@ function placeNewTower() {
     return;
   }
   const { x, y } = getRandomPositionNearPath(200);
+  console.log(x, y);
   //서버로 포탑 좌표 전달
   sendEvent(6, { x, y });
 }
@@ -154,13 +162,15 @@ function gameLoop() {
 
   ctx.font = '25px Times New Roman';
   ctx.fillStyle = 'skyblue';
-  ctx.fillText(`최고 기록: ${game.highScore}`, 100, 50); // 최고 기록 표시
+  ctx.fillText(`나의 최고 기록: ${game.userHighScore}`, 100, 50); // 개인 최고 기록 표시
+  ctx.fillStyle = 'red';
+  ctx.fillText(`전체 최고 기록: ${game.highScore}`, 100, 100); // 최고 기록 표시
   ctx.fillStyle = 'white';
-  ctx.fillText(`점수: ${game.score}`, 100, 100); // 현재 스코어 표시
+  ctx.fillText(`점수: ${game.score}`, 100, 150); // 현재 스코어 표시
   ctx.fillStyle = 'yellow';
-  ctx.fillText(`골드: ${game.userGold}`, 100, 150); // 골드 표시
+  ctx.fillText(`골드: ${game.userGold}`, 100, 200); // 골드 표시
   ctx.fillStyle = 'black';
-  ctx.fillText(`현재 레벨: ${game.monsterLevel}`, 100, 200); // 최고 기록 표시
+  ctx.fillText(`현재 레벨: ${game.monsterLevel}`, 100, 250); // 최고 기록 표시
 
   // 타워 그리기 및 몬스터 공격 처리
   game.towers.forEach((tower) => {
@@ -305,12 +315,14 @@ Promise.all([
       winSound.play().then(() => {
         alert('당신이 게임에서 승리했습니다!');
         // TODO. 게임 종료 이벤트 전송
+        sendEvent(99);
         location.reload();
       });
     } else if (data.OpponentForfeit) {
       winSound.play().then(() => {
         alert('상대방이 게임에서 나갔습니다. 당신이 이겼습니다...');
         // TODO. 게임 종료 이벤트 전송
+        sendEvent(99);
         location.reload();
       });
     } else {
@@ -318,6 +330,7 @@ Promise.all([
       loseSound.play().then(() => {
         alert('아쉽지만 대결에서 패배하셨습니다! 다음 대결에서는 꼭 이기세요!');
         // TODO. 게임 종료 이벤트 전송
+        sendEvent(99);
         location.reload();
       });
     }

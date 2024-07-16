@@ -9,6 +9,8 @@ const initializeGameState = (initialGameData, game) => {
   game.monsterLevel = initialGameData.monsterLevel;
   game.monsterSpawnInterval = initialGameData.monsterSpawnInterval;
   game.score = initialGameData.score;
+  game.highScore = initialGameData.highScore;
+  game.userHighScore = initialGameData.userHighScore;
 };
 
 export default initializeGameState;
