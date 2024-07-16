@@ -4,6 +4,8 @@ import { emoji } from './chat.handler.js';
 import { buyTower, attackTower } from './tower.handler.js';
 import { monsterAttackBase, spawnMonster } from './monster.handler.js';
 
+import { endGame } from './game.handler.js';
+
 const handlerMappings = {
   1: matchGame, // 현재는 안쓰는중
   10: initialData,
@@ -19,6 +21,7 @@ const handlerMappings = {
   // 20: endGame,
   40: spawnMonster,
   50: monsterAttackBase,
+  99: endGame,
   100: emoji,
 };
 

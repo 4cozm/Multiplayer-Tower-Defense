@@ -17,6 +17,7 @@ export class Game {
     this.towers = []; // 유저 타워 목록
     this.score = 0; // 게임 점수
     this.highScore = 0; // 기존 최고 점수
+    this.userHighScore = 0; // 유저 최고 점수
 
     this.monsterID = 0;
     this.monsterHp = 0;
@@ -36,4 +37,4 @@ export class Game {
   }
 }
 
-export default Game
+export default Game;

@@ -1,52 +1,22 @@
-// import { clearMonster } from '../models/monster.model.js';
-// import { clearTower } from '../models/tower.model.js';
-// import { getHighScore, getHightScoreUsers, updateHighScore } from '../models/score.model.js';
-// import { getUserById } from '../models/user.model.js';
-// import jwt from 'jsonwebtoken';
+import { getUserById } from '../models/user.model.js';
+import { getHighScoreByUserId, updateUserScore } from '../db/user/user.db.js';
+import { getSpawnMonster } from '../models/monster.model.js';
 
-import findOpponent from '../util/find.opponent.js';
+export const endGame = async (userId) => {
+  const user = getUserById(userId);
+  const highScore = await getHighScoreByUserId(userId);
 
-// export const gameStart = (uuid) => {
-//   clearTower(uuid);
-//   clearMonster(uuid);
-// };
+  const currentTime = Date.now();
+  const monsters = getSpawnMonster(userId);
 
-// export const gameEnd = async (userId, payload, socket) => {
-//   try {
-//     const { score } = payload.payload;
-//     let serverScore = 0;
-//     let verification = false;
+  monsters.forEach((monster) => {
+    if (currentTime - monster.timestamp > 13000) {
+      console.error('검증 실패');
+      return;
+    }
+  });
 
-//     const user = getUserById(userId);
-//     if (user.score == score) verification = true;
-
-//     if (!verification) {
-//       socket.emit('gameEnd', { status: 'fail', message: '게임 검증 실패' });
-//       return;
-//     }
-
-//     const token = socket.handshake.query.token.split(' ');
-//     let personalRecord = 0;
-//     let fullRecord = 0;
-
-//     const decodedToken = jwt.verify(token[1], process.env.CUSTOM_SECRET_KEY);
-//     personalRecord = await getHighScore(decodedToken);
-//     fullRecord = await getHightScoreUsers();
-
-//     if (personalRecord.highscore < score) updateHighScore(decodedToken, score);
-
-//     socket.emit('gameEnd', { status: 'success', message: '게임종료', serverScore });
-//   } catch (err) {
-//     console.error(err.message);
-//   }
-// };
-
-export const endGame = (userId, payload, socket, io) => {
-  const opponent = findOpponent(socket);
-
-  const { isWin } = payload;
-
-  socket.emit('gameOver', { isWin: isWin });
-
-  io.to(opponent).emit('gameOver', { isWin: !isWin });
+  if (user.score > highScore) {
+    updateUserScore(user.score, userId);
+  }
 };

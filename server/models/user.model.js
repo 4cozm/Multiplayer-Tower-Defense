@@ -1,6 +1,6 @@
 const users = [];
 
-export const addUser = (userId, init, socket) => {
+export const addUser = async (userId, init, socket) => {
   const newUser = {
     userId: userId,
     userGold: init.data.userGold,
@@ -9,7 +9,6 @@ export const addUser = (userId, init, socket) => {
     monsterLevel: init.data.monsterLevel,
     monsterSpawnInterval: init.data.monsterSpawnInterval,
     score: init.data.score,
-    highScore: 0,
     socketId: socket,
   };
   users[userId] = newUser;
