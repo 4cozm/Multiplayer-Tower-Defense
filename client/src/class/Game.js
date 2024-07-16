@@ -17,6 +17,7 @@ export class Game {
     this.towers = []; // 유저 타워 목록
     this.score = 0; // 게임 점수
     this.highScore = 0; // 기존 최고 점수
+    this.userHighScore = 0; // 유저 최고 점수
 
     this.monsterID = 0;
     this.monsterHp = 0;
@@ -31,9 +32,10 @@ export class Game {
     this.opponentBasePosition = null; // 상대방 기지 좌표
     this.opponentMonsters = []; // 상대방 몬스터 목록
     this.opponentTowers = []; // 상대방 타워 목록
+    this.opponentDeleteQueue = []; //동기화에 오류가 생겨 미처 제거되지 못한 몬스터
 
     this.isInitGame = false;
   }
 }
 
-export default Game
+export default Game;

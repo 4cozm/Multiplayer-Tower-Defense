@@ -1,7 +1,9 @@
 import { getGameAssets } from '../init/assets.js';
 import findOpponent from '../util/find.opponent.js';
+import { getMaxHighScore, getHighScoreByUserId } from '../db/user/user.db.js';
+import { getMatchedPlayers } from '../models/match.model.js';
 
-export const initialData = (userId, payload, socket, io) => {
+export const initialData = async (userId, payload, socket, io) => {
   const opponent = findOpponent(socket);
 
   function generateRandomMonsterPath() {
@@ -43,6 +45,13 @@ export const initialData = (userId, payload, socket, io) => {
   };
 
   const { init } = getGameAssets();
+  const maxHighScore = await getMaxHighScore();
+  const highScoreByUserId = await getHighScoreByUserId(userId);
+
+  const matchedPlayers = getMatchedPlayers();
+  const opponentPlayer = matchedPlayers.find((player) => player.userId !== userId);
+  const opponentUserId = opponentPlayer ? opponentPlayer.userId : null;
+  const opponentHighScoreByUserId = await getHighScoreByUserId(opponentUserId);
 
   const initialGameData = {
     monsterPath,
@@ -55,8 +64,11 @@ export const initialData = (userId, payload, socket, io) => {
     monsterLevel: init.data.monsterLevel,
     monsterSpawnInterval: init.data.monsterSpawnInterval,
     score: init.data.score,
-    highScore: init.data.highScore,
+    highScore: maxHighScore,
+    userHighScore: highScoreByUserId,
   };
+
+  console.log('initialGameData', initialGameData);
 
   socket.emit('initializeGameState', initialGameData);
 
@@ -71,7 +83,8 @@ export const initialData = (userId, payload, socket, io) => {
     monsterLevel: init.data.monsterLevel,
     monsterSpawnInterval: init.data.monsterSpawnInterval,
     score: init.data.score,
-    highScore: init.data.highScore,
+    highScore: maxHighScore,
+    userHighScore: opponentHighScoreByUserId,
   });
 };
 

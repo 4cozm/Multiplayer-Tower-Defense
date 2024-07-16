@@ -1,5 +1,6 @@
 import { addMatch, getMatchPlayers, clearMatchPlayers } from '../models/match.model.js';
 import { v4 as uuid } from 'uuid';
+import { addMatchedPlayers } from '../models/match.model.js';
 
 export const matchGame = async (userId, socket, io) => {
   const matchArray = getMatchPlayers();
@@ -17,6 +18,8 @@ export const matchGame = async (userId, socket, io) => {
 
     const player1 = matchArray[0];
     const player2 = matchArray[1];
+
+    addMatchedPlayers(player1, player2);
 
     io.sockets.sockets.get(player1.socketId).join(roomName);
     io.sockets.sockets.get(player2.socketId).join(roomName);

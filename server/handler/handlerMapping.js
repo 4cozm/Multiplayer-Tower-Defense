@@ -1,8 +1,10 @@
 import { matchGame } from './match.handler.js';
 import initialData from './init.handler.js';
-
+import { emoji } from './chat.handler.js';
 import { buyTower, attackTower } from './tower.handler.js';
 import { monsterAttackBase, spawnMonster } from './monster.handler.js';
+
+import { endGame } from './game.handler.js';
 
 const handlerMappings = {
   1: matchGame, // 현재는 안쓰는중
@@ -19,6 +21,8 @@ const handlerMappings = {
   // 20: endGame,
   40: spawnMonster,
   50: monsterAttackBase,
+  99: endGame,
+  100: emoji,
 };
 
 export default handlerMappings;

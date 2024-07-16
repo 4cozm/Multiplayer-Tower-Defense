@@ -1,7 +1,7 @@
 import { game, monsterImages } from '../multi_game.js';
 
 export class Monster {
-  constructor(level, monsterID, maxHp, attackPower, monsterNumber, path = game.monsterPath) {
+  constructor(level, monsterID, maxHp = 100, attackPower, monsterNumber, path = game.monsterPath) {
     if (game.monsterPath.length <= 0) {
       throw new Error('몬스터가 이동할 경로가 필요합니다.');
     }
@@ -22,7 +22,7 @@ export class Monster {
     this.attackPower = attackPower;
   }
 
-  move() {
+  move(base) {
     if (this.currentIndex < this.path.length - 1) {
       const nextPoint = this.path[this.currentIndex + 1];
       const deltaX = nextPoint.x - this.x;
@@ -40,8 +40,9 @@ export class Monster {
       }
       return false;
     } else {
+      const Attacked = base.takeDamage(this.attackPower);
       this.hp = 0; // 몬스터는 이제 기지를 공격했으므로 자연스럽게 소멸해야 합니다.
-      return true;
+      return Attacked;
     }
   }
 
@@ -56,7 +57,7 @@ export class Monster {
 }
 
 export class OpponentMonster extends Monster {
-  constructor(level, monsterID, maxHp, attackPower, monsterNumber, path = game.opponentMonsterPath) {
+  constructor(level, monsterID, maxHp = 100, attackPower, monsterNumber, path = game.opponentMonsterPath) {
     if (game.opponentMonsterPath.length <= 0) {
       throw new Error('상대 몬스터가 이동할 경로가 필요합니다.');
     }

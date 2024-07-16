@@ -5,6 +5,7 @@ import { makeTower, makeOpponentTower } from './tower/createTower.handler.js';
 import { spawnMonster, opponentSpawnMonster } from './monster/monsterSpawn.handler.js';
 import { monsterDead, opponentMonsterDead } from './monster/monsterDead.handler.js';
 import { opponentTowerAttack, towerAttack } from './tower/towerAttack.handler.js';
+import { moveEmoji, opponentEmoji, opponentMoveEmoji } from './chat/emoji.handler.js';
 
 const addGame = (handler) => {
   return (...args) => {
@@ -23,6 +24,9 @@ const eventHandler = {
   opponentMonsterDead: addGame(opponentMonsterDead),
   towerAttack: addGame(towerAttack),
   opponentTowerAttack: addGame(opponentTowerAttack),
+  opponentEmoji,
+  opponentMoveEmoji,
+  moveEmoji,
 };
 
 export default eventHandler;

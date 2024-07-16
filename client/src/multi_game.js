@@ -107,6 +107,13 @@ function getRandomPositionNearPath(maxDistance) {
   const offsetX = (Math.random() - 0.5) * 2 * maxDistance;
   const offsetY = (Math.random() - 0.5) * 2 * maxDistance;
 
+  if (posY + offsetY >= canvas.height - 75) {
+    return {
+      x: posX + offsetX,
+      y: posY - 50,
+    };
+  }
+
   return {
     x: posX + offsetX,
     y: posY + offsetY,
@@ -128,6 +135,7 @@ function placeNewTower() {
     return;
   }
   const { x, y } = getRandomPositionNearPath(200);
+  console.log(x, y);
   //서버로 포탑 좌표 전달
   sendEvent(6, { x, y });
 }
@@ -154,13 +162,15 @@ function gameLoop() {
 
   ctx.font = '25px Times New Roman';
   ctx.fillStyle = 'skyblue';
-  ctx.fillText(`최고 기록: ${game.highScore}`, 100, 50); // 최고 기록 표시
+  ctx.fillText(`나의 최고 기록: ${game.userHighScore}`, 100, 50); // 개인 최고 기록 표시
+  ctx.fillStyle = 'red';
+  ctx.fillText(`전체 최고 기록: ${game.highScore}`, 100, 100); // 최고 기록 표시
   ctx.fillStyle = 'white';
-  ctx.fillText(`점수: ${game.score}`, 100, 100); // 현재 스코어 표시
+  ctx.fillText(`점수: ${game.score}`, 100, 150); // 현재 스코어 표시
   ctx.fillStyle = 'yellow';
-  ctx.fillText(`골드: ${game.userGold}`, 100, 150); // 골드 표시
+  ctx.fillText(`골드: ${game.userGold}`, 100, 200); // 골드 표시
   ctx.fillStyle = 'black';
-  ctx.fillText(`현재 레벨: ${game.monsterLevel}`, 100, 200); // 최고 기록 표시
+  ctx.fillText(`현재 레벨: ${game.monsterLevel}`, 100, 250); // 최고 기록 표시
 
   // 타워 그리기 및 몬스터 공격 처리
   game.towers.forEach((tower) => {
@@ -184,7 +194,7 @@ function gameLoop() {
   for (let i = game.monsters.length - 1; i >= 0; i--) {
     const monster = game.monsters[i];
     if (monster.hp > 0) {
-      const Attacked = monster.move();
+      const Attacked = monster.move(game.base);
       if (Attacked) {
         const attackedSound = new Audio('sounds/attacked.wav');
         attackedSound.volume = 0.1;
@@ -207,7 +217,7 @@ function gameLoop() {
   });
 
   game.opponentMonsters.forEach((monster) => {
-    monster.move();
+    monster.move(game.opponentBase);
     monster.draw(opponentCtx, true);
   });
 
@@ -223,7 +233,7 @@ function initGame() {
 
   bgm = new Audio('sounds/bgm.mp3');
   bgm.loop = true;
-  bgm.volume = 0.2;
+  bgm.volume = 0.009;
   bgm.play();
 
   initMap(); // 맵 초기화 (배경, 몬스터 경로 그리기)
@@ -286,40 +296,44 @@ Promise.all([
       console.log('게임 초기화 데이터:', game, '출력시간', Date.now());
       initGame();
     }
+    eventHandler.opponentMoveEmoji(game.basePosition);
+    eventHandler.moveEmoji(game.opponentBasePosition);
   });
 
   serverSocket.on('updateGameState', (syncData) => {
-    console.log('Received sync data:', syncData);
     eventHandler.updateGameState(syncData);
   });
 
   serverSocket.on('gameOver', (data) => {
-    bgm.pause();
-    const { isWin } = data;
     const winSound = new Audio('sounds/win.wav');
     const loseSound = new Audio('sounds/lose.wav');
     winSound.volume = 0.01;
     loseSound.volume = 0.1;
 
-    if (isWin) {
+    if (data.isWin) {
+      bgm.pause();
       winSound.play().then(() => {
         alert('당신이 게임에서 승리했습니다!');
         // TODO. 게임 종료 이벤트 전송
+        sendEvent(99);
+        location.reload();
+      });
+    } else if (data.OpponentForfeit) {
+      winSound.play().then(() => {
+        alert('상대방이 게임에서 나갔습니다. 당신이 이겼습니다...');
+        // TODO. 게임 종료 이벤트 전송
+        sendEvent(99);
         location.reload();
       });
     } else {
+      bgm.pause();
       loseSound.play().then(() => {
         alert('아쉽지만 대결에서 패배하셨습니다! 다음 대결에서는 꼭 이기세요!');
         // TODO. 게임 종료 이벤트 전송
+        sendEvent(99);
         location.reload();
       });
     }
-  });
-
-  // 게임 시작 도중 상대방이 나갔을 때 처리
-  serverSocket.on('opponentLeft', (data) => {
-    alert(data.message);
-    location.reload();
   });
 
   //타워 구입 이벤트
@@ -350,6 +364,11 @@ Promise.all([
   });
   serverSocket.on('opponentTowerAttack', (data) => {
     eventHandler.opponentTowerAttack(data);
+  });
+
+  //채팅 이벤트
+  serverSocket.on('opponentEmoji', (data) => {
+    eventHandler.opponentEmoji(data);
   });
 
   //에러 이벤트

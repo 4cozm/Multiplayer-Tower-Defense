@@ -35,7 +35,7 @@ export class Tower {
     if (this.cooldown <= 0) {
       if (!this.isOpponent) {
         //적 포탑이 단지 그림을 그리기 위해 인스턴스에 접근하는지 확인 여부
-        sendEvent(7, { towerId: this.uuid, monsterId: monster.monsterID });
+        sendEvent(7, { towerId: this.uuid, monsterId: monster.monsterID, timeStamp: Date.now() });
         monster.hp -= this.attackPower;
       }
       this.cooldown = 180; // 3초 쿨타임 (초당 60프레임)
