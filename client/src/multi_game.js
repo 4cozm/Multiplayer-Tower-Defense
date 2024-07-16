@@ -367,6 +367,12 @@ Promise.all([
     eventHandler.opponentEmoji(data);
   });
 
+  //채팅 입력
+  serverSocket.on('chat', (data) => {
+    console.log(data);
+    eventHandler.makeChat(data);
+  });
+
   //에러 이벤트
   serverSocket.on('error', (errorResponse) => {
     alert(errorResponse);
