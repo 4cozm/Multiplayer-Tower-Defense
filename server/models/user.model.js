@@ -11,7 +11,6 @@ export const addUser = (userId, init, socket) => {
     score: init.data.score,
     highScore: 0,
     socketId: socket,
-    level: 1,
   };
   users[userId] = newUser;
 };
