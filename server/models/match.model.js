@@ -2,6 +2,7 @@ import CustomError from '../util/error/customError.js';
 import { ErrorCodes } from '../util/error/errorCodes.js';
 
 const matchModel = [];
+const matchedPlayers = [];
 /**
  * 유저를 매치 대기열에 push하고 변경된 배열 정보를 반환합니다.
  * @param {string} userId
@@ -47,5 +48,25 @@ export const deletePlayerFromMatchModel = (socket) => {
     }
   } catch (error) {
     console.error('대기열에서 유저 제거 중 오류 발생', error);
+  }
+};
+
+export const addMatchedPlayers = (player1, player2) => {
+  matchedPlayers.push(player1, player2);
+  return matchedPlayers;
+};
+
+export const deleteMatchedPlayer = (socket, io) => {
+  try {
+    const exit = matchedPlayers.find((exit) => exit.socketId === socket.id);
+
+    const index = matchedPlayers.indexOf(exit);
+    matchedPlayers.splice(index, 1);
+
+    if (matchedPlayers.length > 0) {
+      io.to(matchedPlayers[0].socketId).emit('gameOver', { OpponentForfeit: true });
+    }
+  } catch (error) {
+    console.error('유저 제거 중 오류 발생', error);
   }
 };

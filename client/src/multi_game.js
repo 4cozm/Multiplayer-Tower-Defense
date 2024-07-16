@@ -184,7 +184,7 @@ function gameLoop() {
   for (let i = game.monsters.length - 1; i >= 0; i--) {
     const monster = game.monsters[i];
     if (monster.hp > 0) {
-      const Attacked = monster.move();
+      const Attacked = monster.move(game.base);
       if (Attacked) {
         const attackedSound = new Audio('sounds/attacked.wav');
         attackedSound.volume = 0.1;
@@ -207,7 +207,7 @@ function gameLoop() {
   });
 
   game.opponentMonsters.forEach((monster) => {
-    monster.move();
+    monster.move(game.opponentBase);
     monster.draw(opponentCtx, true);
   });
 
@@ -296,32 +296,32 @@ Promise.all([
   });
 
   serverSocket.on('gameOver', (data) => {
-    bgm.pause();
-    const { isWin } = data;
     const winSound = new Audio('sounds/win.wav');
     const loseSound = new Audio('sounds/lose.wav');
     winSound.volume = 0.01;
     loseSound.volume = 0.1;
 
-    if (isWin) {
+    if (data.isWin) {
+      bgm.pause();
       winSound.play().then(() => {
         alert('당신이 게임에서 승리했습니다!');
         // TODO. 게임 종료 이벤트 전송
         location.reload();
       });
+    } else if (data.OpponentForfeit) {
+      winSound.play().then(() => {
+        alert('상대방이 게임에서 나갔습니다. 당신이 이겼습니다...');
+        // TODO. 게임 종료 이벤트 전송
+        location.reload();
+      });
     } else {
+      bgm.pause();
       loseSound.play().then(() => {
         alert('아쉽지만 대결에서 패배하셨습니다! 다음 대결에서는 꼭 이기세요!');
         // TODO. 게임 종료 이벤트 전송
         location.reload();
       });
     }
-  });
-
-  // 게임 시작 도중 상대방이 나갔을 때 처리
-  serverSocket.on('opponentLeft', (data) => {
-    alert(data.message);
-    location.reload();
   });
 
   //타워 구입 이벤트

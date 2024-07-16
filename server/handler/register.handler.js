@@ -23,7 +23,7 @@ const registerHandler = (io) => {
     }
 
     socket.on('event', (data) => handlerEvent(socket, data, io));
-    socket.on('disconnect', () => handleDisconnect(socket)); //socket 객체를 직접 사용해야 함
+    socket.on('disconnect', () => handleDisconnect(socket, io)); //socket 객체를 직접 사용해야 함
   });
 };
 

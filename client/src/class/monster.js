@@ -22,7 +22,7 @@ export class Monster {
     this.attackPower = attackPower;
   }
 
-  move() {
+  move(base) {
     if (this.currentIndex < this.path.length - 1) {
       const nextPoint = this.path[this.currentIndex + 1];
       const deltaX = nextPoint.x - this.x;
@@ -40,8 +40,9 @@ export class Monster {
       }
       return false;
     } else {
+      const Attacked = base.takeDamage(this.attackPower);
       this.hp = 0; // 몬스터는 이제 기지를 공격했으므로 자연스럽게 소멸해야 합니다.
-      return true;
+      return Attacked;
     }
   }
 
