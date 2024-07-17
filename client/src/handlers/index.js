@@ -14,6 +14,7 @@ import { moveEmoji, opponentEmoji, opponentMoveEmoji } from './chat/emoji.handle
 import { makeChat } from './chat/chat.handler.js';
 import { skill, skillHeat } from './skills/skill.handler.js';
 import { itemHeal } from './item/heal.handler.js';
+
 const addGame = (handler) => {
   return (...args) => {
     return handler(...args, game);

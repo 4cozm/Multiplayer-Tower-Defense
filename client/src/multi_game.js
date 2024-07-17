@@ -322,9 +322,6 @@ Promise.all([
         progressBarContainer.style.display = 'none';
         progressBar.style.display = 'none';
         buyTowerButton.style.display = 'block';
-        document.querySelector('#skill').style.display = 'block';
-        buyBombButton.style.display = 'block';
-        buyHealButton.style.display = 'block';
         canvas.style.display = 'block';
         opponentCanvas.style.display = 'block';
 
@@ -487,3 +484,31 @@ buyTowerButton.style.display = 'none';
 buyTowerButton.addEventListener('click', placeNewTower);
 
 document.body.appendChild(buyTowerButton);
+
+const buyBombButton = document.createElement('button');
+buyBombButton.textContent = '폭탄 구매';
+buyBombButton.style.position = 'absolute';
+buyBombButton.style.top = '60px';
+buyBombButton.style.right = '10px';
+buyBombButton.style.padding = '10px 20px';
+buyBombButton.style.fontSize = '16px';
+buyBombButton.style.cursor = 'pointer';
+buyBombButton.style.display = 'none';
+
+buyBombButton.addEventListener('click', monsterBomb);
+
+document.body.appendChild(buyBombButton);
+
+const buyHealButton = document.createElement('button');
+buyHealButton.textContent = '힐 구매';
+buyHealButton.style.position = 'absolute';
+buyHealButton.style.top = '60px';
+buyHealButton.style.right = '150px';
+buyHealButton.style.padding = '10px 20px';
+buyHealButton.style.fontSize = '16px';
+buyHealButton.style.cursor = 'pointer';
+buyHealButton.style.display = 'none';
+
+buyHealButton.addEventListener('click', baseHeal);
+
+document.body.appendChild(buyHealButton);
