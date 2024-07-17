@@ -16,6 +16,10 @@ export const removeMonster = (userId, uuid) => {
   delete monsters[userId][uuid];
 };
 
+export const removeAllMonster = (userId) => {
+  delete monsters[userId];
+};
+
 export const getMonsterById = (userId, monsterID) => {
   return monsters[userId][monsterID];
 };

@@ -24,4 +24,12 @@ export class Base {
     if (this.hp < 0) this.hp = 0;
     return true;
   }
+
+  healItem(heal) {
+    if (this.hp + heal <= this.maxHp) {
+      this.hp += heal;
+    } else {
+      this.hp = this.maxHp;
+    }
+  }
 }
