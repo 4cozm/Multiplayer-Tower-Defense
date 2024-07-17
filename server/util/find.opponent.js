@@ -6,7 +6,7 @@ import { ErrorCodes } from '../util/error/errorCodes.js';
  * 현재 경기중인 상대방의 socketID를 반환하는 함수
  * @param {socket} socket
  */
-const findOpponent = (socket) => {
+export const findOpponent = (socket) => {
   const rooms = socket.nsp.adapter.rooms; // 방 정보를 가져옴
   try {
     for (const [roomId, sockets] of rooms) {
@@ -30,4 +30,18 @@ const findOpponent = (socket) => {
   }
 };
 
-export default findOpponent;
+export const findOpponentUserId = (socket) => {
+  try {
+    const matchedPlayers = getMatchedPlayers();
+    const playerMatchData = matchedPlayers.find((player) => player.userId == socket.data.userId);
+    if (!playerMatchData) {
+      console.error('해당 유저의 매치 상대방을 찾을 수 없습니다');
+    }
+    return playerMatchData.opponentUserId;
+  } catch (error) {
+    handleError(
+      socket,
+      new CustomError(ErrorCodes.FIND_OPPONENT_ID_FAILED, '적 아이디를 찾아오는 과정에서 문제가 발생했습니다.'),
+    );
+  }
+};

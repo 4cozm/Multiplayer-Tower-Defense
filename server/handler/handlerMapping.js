@@ -7,7 +7,7 @@ import { monsterAttackBase, spawnMonster } from './monster.handler.js';
 import { endGame } from './game.handler.js';
 
 const handlerMappings = {
-  1: matchGame, // 현재는 안쓰는중
+  //1: matchGame,
   10: initialData,
   //   5: initTower,
   6: buyTower,

@@ -1,8 +1,8 @@
 import { getGameAssets } from '../init/assets.js';
-import findOpponent from '../util/find.opponent.js';
+import { findOpponent } from '../util/find.opponent.js';
 import { getMaxHighScore, getHighScoreByUserId, getUserRank } from '../db/user/user.db.js';
 import { getMatchedPlayers } from '../models/match.model.js';
-import { logError } from '../models/log.model.js';
+import { setLog } from '../db/log/log.db.js';
 import { handleError } from '../util/error/errorHandler.js';
 
 export const initialData = async (userId, payload, socket, io) => {
@@ -53,8 +53,9 @@ export const initialData = async (userId, payload, socket, io) => {
     const userRank = await getUserRank(userId);
 
     const matchedPlayers = getMatchedPlayers();
-    const opponentPlayer = matchedPlayers.find((player) => player.userId !== userId);
-    const opponentUserId = opponentPlayer ? opponentPlayer.userId : null;
+    const player = matchedPlayers.find((player) => player.userId == userId);
+    const opponentUserId = player ? player.opponentUserId : null;
+
     const opponentHighScoreByUserId = await getHighScoreByUserId(opponentUserId);
     const opponentRank = await getUserRank(opponentUserId);
 
@@ -96,7 +97,7 @@ export const initialData = async (userId, payload, socket, io) => {
       opponentRank: userRank,
     });
   } catch (error) {
-    logError(userId, error.message);
+    setLog(userId, error.message);
     handleError(socket, error);
   }
 };

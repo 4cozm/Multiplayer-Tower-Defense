@@ -4,8 +4,7 @@ import { getSpawnMonster } from '../models/monster.model.js';
 import CustomError from '../util/error/customError.js';
 import { handleError } from '../util/error/errorHandler.js';
 import { ErrorCodes } from '../util/error/errorCodes.js';
-import { saveErrorLogs } from '../models/log.model.js';
-import { logError } from '../models/log.model.js';
+import { setLog } from '../db/log/log.db.js';
 
 export const endGame = async (userId, socket) => {
   try {
@@ -28,13 +27,11 @@ export const endGame = async (userId, socket) => {
       }
     });
 
-    saveErrorLogs(userId);
-
     if (user.score > highScore) {
       await updateUserScore(user.score, userId);
     }
   } catch (error) {
-    logError(userId, error.message);
+    setLog(userId, error.message);
     handleError(socket, error);
   }
 };

@@ -48,7 +48,13 @@ export const deletePlayerFromMatchModel = (socket) => {
 };
 
 export const addMatchedPlayers = (player1, player2) => {
-  matchedPlayers.push(player1, player2);
+  //구조 분해 할당으로 두 유저의 값에 상대 유저의 ID를 추가해준다
+  const { userId: player1Id, socketId: player1SocketId } = player1;
+  const { userId: player2Id, socketId: player2SocketId } = player2;
+
+  const newPlayer1 = { userId: player1Id, socketId: player1SocketId, opponentUserId: player2Id };
+  const newPlayer2 = { userId: player2Id, socketId: player2SocketId, opponentUserId: player1Id };
+  matchedPlayers.push(newPlayer1, newPlayer2);
 };
 
 export const getMatchedPlayers = () => {
