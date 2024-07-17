@@ -3,7 +3,7 @@ export const monsterDead = (data, game) => {
   const { monsterId } = data;
   const monsterIndex = game.monsters.findIndex((item) => item.monsterID == monsterId);
   if (monsterIndex.length <= 0) {
-    console.error('처리할 몬스터를 찾지 못했습니다:', monsterId);
+    openModal('처리할 몬스터를 찾지 못했습니다:', monsterId);
     return;
   }
 
@@ -19,7 +19,7 @@ export const opponentMonsterDead = (data, game) => {
     flushDeleteQueue(game);
   }
   if (monsterIndex.length <= 0) {
-    console.error('처리할 상대방 몬스터를 찾지 못했습니다:', monsterId);
+    openModal('처리할 상대방 몬스터를 찾지 못했습니다:', monsterId);
     game.opponentDeleteQueue.push(monsterId); //제거 루프를 시행하는 배열에 삽입
     return;
   }
@@ -36,7 +36,7 @@ const flushDeleteQueue = (game) => {
       game.opponentDeleteQueue.splice(deleteQueueMonsterIndex, 1);
       console.log('제거되지 않은 몬스터 보정 작업 완료');
     } else {
-      console.error('opponentDeleteQueue에서도 몬스터를 제거하지 못했습니다!', monster);
+      openModal('opponentDeleteQueue에서도 몬스터를 제거하지 못했습니다!', monster);
     }
   }
 };

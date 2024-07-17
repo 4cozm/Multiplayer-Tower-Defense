@@ -1,3 +1,7 @@
+import CustomError from '../util/error/customError.js';
+import { handleError } from '../util/error/errorHandler.js';
+import { ErrorCodes } from '../util/error/errorCodes.js';
+
 import { getMatchedPlayers } from '../models/match.model.js';
 
 /**
@@ -21,7 +25,10 @@ export const findOpponent = (socket) => {
     }
     return null; // 상대가 없을 경우 null 반환
   } catch (error) {
-    console.error('방 정보를 조회하는데 실패했습니다 전달 받은 정보:', socket);
+    handleError(
+      socket,
+      new CustomError(ErrorCodes.FIND_OPPONENT_FAILED, '상대방을 찾는데 실패했습니다. 전달 받은 정보:', socket),
+    );
   }
 };
 
