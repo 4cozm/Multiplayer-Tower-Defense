@@ -1,4 +1,4 @@
-import findOpponent from '../util/find.opponent.js';
+import {findOpponent} from '../util/find.opponent.js';
 import { addChat } from '../models/chat.model.js';
 import findRoom from '../util/find.room.js';
 

@@ -2,7 +2,7 @@ import { gameAssets } from '../init/assets.js';
 import { getTower, setTowerAttackLog, setRefundTower, setTower } from '../models/tower.model.js';
 import { getUserById } from '../models/user.model.js';
 import { v4 } from 'uuid';
-import findOpponent from '../util/find.opponent.js';
+import {findOpponent} from '../util/find.opponent.js';
 import { getMonsterById, removeMonster } from '../models/monster.model.js';
 import { killMonster } from './monster.handler.js';
 

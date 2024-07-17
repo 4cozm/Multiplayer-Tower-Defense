@@ -7,6 +7,7 @@ import { monsterDead, opponentMonsterDead } from './monster/monsterDead.handler.
 import { opponentTowerAttack, towerAttack } from './tower/towerAttack.handler.js';
 import { moveEmoji, opponentEmoji, opponentMoveEmoji } from './chat/emoji.handler.js';
 import { makeChat } from './chat/chat.handler.js';
+import { skill, skillHeat } from './skills/skill.handler.js';
 
 const addGame = (handler) => {
   return (...args) => {
@@ -29,6 +30,8 @@ const eventHandler = {
   opponentMoveEmoji,
   moveEmoji,
   makeChat: addGame(makeChat),
+  skill: addGame(skill),
+  skillHeat: addGame(skillHeat),
 };
 
 export default eventHandler;

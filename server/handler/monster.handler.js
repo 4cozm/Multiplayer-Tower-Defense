@@ -3,7 +3,7 @@ import { addMonster, getMonsterById, removeMonster } from '../models/monster.mod
 
 import { getUserById } from '../models/user.model.js';
 import { v4 as uuidv4 } from 'uuid';
-import findOpponent from '../util/find.opponent.js';
+import { findOpponent } from '../util/find.opponent.js';
 
 export const spawnMonster = (userId, _, socket, io) => {
   const opponent = findOpponent(socket);
@@ -42,6 +42,8 @@ export const monsterAttackBase = (userId, payload, socket, io) => {
 
   removeMonster(userId, monsterID);
 
+  //상대방 화면에서도 몬스터가 죽었다고 보내줘야함
+  io.to(opponent).emit('opponentMonsterDead', { monsterId: monsterID });
   socket.emit('updateGameState', { baseHp: user.baseHp }); //기지 체력이 0이 된 정보를 받고 게임오버나 승리 메세지를 받아야 할 것 같습니다.
 
   if (user.baseHp <= 0) {

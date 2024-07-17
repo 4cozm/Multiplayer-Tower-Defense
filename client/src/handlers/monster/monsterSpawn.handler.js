@@ -8,7 +8,15 @@ export const spawnMonster = (data) => {
 };
 
 export const opponentSpawnMonster = (data) => {
-  const { monsterLevel, monsterID, monsterHp, monsterPower, monsterNumber } = data;
-  const newMonster = new OpponentMonster(monsterLevel, monsterID, monsterHp, monsterPower, monsterNumber);
+  const { monsterLevel, monsterID, monsterHp, monsterPower, monsterNumber, monsterPath, randomDelay } = data;
+  if (randomDelay) {
+    //서버에서 랜덤 시간으로 몬스터 생성 요청시 값을 읽어 랜덤으로 스폰
+    setTimeout(() => {
+      const newMonster = new Monster(monsterLevel, monsterID, monsterHp, monsterPower, monsterNumber, monsterPath);
+      game.opponentMonsters.push(newMonster);
+    }, randomDelay);
+    return;
+  }
+  const newMonster = new OpponentMonster(monsterLevel, monsterID, monsterHp, monsterPower, monsterNumber, monsterPath);
   game.opponentMonsters.push(newMonster); //몬스터를 그리기
 };
