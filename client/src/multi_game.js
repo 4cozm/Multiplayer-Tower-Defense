@@ -25,6 +25,34 @@ const progressBarMessage = document.getElementById('progressBarMessage');
 const progressBar = document.getElementById('progressBar');
 const loader = document.getElementsByClassName('loader')[0];
 
+// 모달 엘리먼트와 관련된 요소들
+const errorModal = document.getElementById('errorModal');
+const modalMessage = document.getElementById('modalMessage');
+const closeModal = document.getElementsByClassName('close')[0];
+
+// 모달을 여는 함수
+function openModal(message) {
+  modalMessage.textContent = message;
+  errorModal.style.display = 'block';
+}
+
+// 모달을 닫는 함수
+function closeModalFunction() {
+  errorModal.style.display = 'none';
+}
+
+// 모달의 닫기 버튼 클릭 시 모달 닫기
+closeModal.onclick = function () {
+  closeModalFunction();
+};
+
+// 모달 영역 외부 클릭 시 모달 닫기
+window.onclick = function (event) {
+  if (event.target == errorModal) {
+    closeModalFunction();
+  }
+};
+
 const NUM_OF_MONSTERS = 5; // 몬스터 개수
 
 // 이미지 로딩 파트
@@ -130,10 +158,10 @@ function placeInitialTowers(initialTowerCoords, initialTowers, context) {
 
 function placeNewTower() {
   // 타워를 구입할 수 있는 자원이 있을 때 타워 구입 후 랜덤 배치
-  if (game.userGold < game.towerCost) {
-    alert('골드가 부족합니다.');
-    return;
-  }
+  // if (game.userGold < game.towerCost) {
+  //   alert('골드가 부족합니다.');
+  //   return;
+  // }
   const { x, y } = getRandomPositionNearPath(200);
   console.log(x, y);
   //서버로 포탑 좌표 전달
@@ -325,7 +353,7 @@ Promise.all([
         location.reload();
       });
     } else if (data.OpponentForfeit) {
-      bgm.pause();
+      // bgm.pause();
       winSound.play().then(() => {
         alert('상대방이 게임에서 나갔습니다. 당신이 이겼습니다...');
         // TODO. 게임 종료 이벤트 전송
@@ -386,8 +414,8 @@ Promise.all([
 
   //에러 이벤트
   serverSocket.on('error', (errorResponse) => {
-    alert(errorResponse);
-    location.href = '/login.html';
+    openModal(errorResponse.data.message);
+    // location.href = '/login.html';
   });
 });
 

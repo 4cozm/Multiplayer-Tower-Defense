@@ -7,12 +7,7 @@ const filterModel = ['***', '****', '****'];
 
 export const addChat = (userId, message) => {
   if (!userId || !message) {
-    throw new CustomError(
-      ErrorCodes.ADD_CHAT_QUEUE_FAILED,
-      '챗에 등록하기 위한 정보가 누락되었습니다',
-      userId,
-      message,
-    );
+    throw new CustomError(ErrorCodes.ADD_CHAT_QUEUE_FAILED, '챗에 등록하기 위한 정보가 누락되었습니다');
   }
 
   const checkedMessage = checkChat(message);

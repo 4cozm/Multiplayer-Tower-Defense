@@ -1,4 +1,5 @@
 import CustomError from '../util/error/customError.js';
+import { handleError } from '../util/error/errorHandler.js';
 import { ErrorCodes } from '../util/error/errorCodes.js';
 
 const matchModel = [];
@@ -10,12 +11,7 @@ const matchedPlayers = [];
  */
 export const addMatch = (userId, socketId) => {
   if (!userId || !socketId) {
-    throw new CustomError(
-      ErrorCodes.ADD_MATCH_QUEUE_FAILED,
-      '매치큐에 등록하기 위한 정보가 누락되었습니다',
-      userId,
-      socketId,
-    );
+    throw new CustomError(ErrorCodes.ADD_MATCH_QUEUE_FAILED, '매치큐에 등록하기 위한 정보가 누락되었습니다');
   }
   const player = { userId, socketId };
 
@@ -47,7 +43,7 @@ export const deletePlayerFromMatchModel = (socket) => {
       console.log('대기열 남은 유저 수:', matchModel.length);
     }
   } catch (error) {
-    console.error('대기열에서 유저 제거 중 오류 발생', error);
+    throw new CustomError(ErrorCodes.DELETE_PLAYER_FAILED, '대기 중인 유저 제거 중 오류 발생');
   }
 };
 
@@ -70,6 +66,6 @@ export const deleteMatchedPlayer = (socket, io) => {
       io.to(matchedPlayers[0].socketId).emit('gameOver', { OpponentForfeit: true });
     }
   } catch (error) {
-    console.error('유저 제거 중 오류 발생', error);
+    handleError(socket, new CustomError(ErrorCodes.DELETE_MATCHED_PLAYER_FAILED, '매칭된 유저 제거 중 오류 발생'));
   }
 };
