@@ -3,7 +3,7 @@ export const itemTowerDestroy = (data, game) => {
   const towerIndex = game.opponentTowers.findIndex((item) => item.uuid == towerId);
 
   if (towerIndex.length <= 0) {
-    console.error('없앨 타워를 찾지 못했습니다:', monsterId);
+    console.error('없앨 타워를 찾지 못했습니다:', towerId);
     return;
   }
 
@@ -15,7 +15,7 @@ export const opponentItemTowerDestroy = (data, game) => {
   const towerIndex = game.towers.findIndex((item) => item.uuid == towerId);
 
   if (towerIndex.length <= 0) {
-    console.error('없앨 타워를 찾지 못했습니다:', monsterId);
+    console.error('없앨 타워를 찾지 못했습니다:', towerId);
     return;
   }
 

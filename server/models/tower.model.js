@@ -23,6 +23,10 @@ export const getTower = (userId, uuid) => {
   return towers[userId] ? towers[userId][uuid] : null;
 };
 
+export const getAllTower = (userId) => {
+  return towers[userId];
+};
+
 export const setTower = (userId, x, y, level, towerId, power, lastAttackTime) => {
   if (!towers[userId]) {
     towers[userId] = {};
@@ -37,6 +41,10 @@ export const setTowerAttackLog = (userId, towerId, monsterId, towerPower, server
   }
   towerAttacks[userId][towerId] = { towerId, monsterId, towerPower, serverTime };
   return towerAttacks[userId][towerId];
+};
+
+export const removeTower = (userId, uuid) => {
+  delete towers[userId][uuid];
 };
 
 export const setRefundTower = (uuid, id, timestamp) => {

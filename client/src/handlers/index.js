@@ -14,6 +14,8 @@ import { moveEmoji, opponentEmoji, opponentMoveEmoji } from './chat/emoji.handle
 import { makeChat } from './chat/chat.handler.js';
 import { skill, skillHeat } from './skills/skill.handler.js';
 import { itemHeal } from './item/heal.handler.js';
+import { itemTowerDestroy, opponentItemTowerDestroy } from './item/itemTower.handler.js';
+import { itemMonsterSpeedUp, opponentItemMonsterSpeedUp } from './item/itemMonster.handler.js';
 
 const addGame = (handler) => {
   return (...args) => {
@@ -41,6 +43,8 @@ const eventHandler = {
   itemMonsterDead: addGame(itemMonsterDead),
   opponentItemMonsterDead: addGame(opponentItemMonsterDead),
   itemHeal: addGame(itemHeal),
+  itemTowerDestroy: addGame(itemTowerDestroy),
+  opponentItemTowerDestroy: addGame(opponentItemTowerDestroy),
 };
 
 export default eventHandler;
