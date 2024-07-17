@@ -26,6 +26,18 @@ export const opponentMonsterDead = (data, game) => {
   game.opponentMonsters.splice(monsterIndex, 1);
 };
 
+export const itemMonsterDead = (data, game) => {
+  const monsterLength = game.monsters.length;
+
+  game.monsters.splice(0, monsterLength);
+};
+
+export const opponentItemMonsterDead = (data, game) => {
+  const monsterLength = game.opponentMonsters.length;
+
+  game.opponentMonsters.splice(0, monsterLength);
+};
+
 const flushDeleteQueue = (game) => {
   const monster = game.opponentDeleteQueue[0]; //제거되지 않은 배열의 첫번째 요소를 가지고 옴
   if (monster) {

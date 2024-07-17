@@ -167,6 +167,14 @@ function placeNewTower() {
   sendEvent(6, { x, y });
 }
 
+function monsterBomb() {
+  sendEvent(70, { itemId: 4 });
+}
+
+function baseHeal() {
+  sendEvent(70, { itemId: 3 });
+}
+
 function placeBase(position, isPlayer) {
   if (isPlayer) {
     game.base = new Base(position.x, position.y, game.baseHp);
@@ -315,6 +323,8 @@ Promise.all([
         progressBar.style.display = 'none';
         buyTowerButton.style.display = 'block';
         document.querySelector('#skill').style.display = 'block';
+        buyBombButton.style.display = 'block';
+        buyHealButton.style.display = 'block';
         canvas.style.display = 'block';
         opponentCanvas.style.display = 'block';
 
@@ -401,6 +411,22 @@ Promise.all([
     eventHandler.opponentTowerAttack(data);
   });
 
+  //아이템 타워 파괴
+  serverSocket.on('towerDestroy', (data) => {});
+
+  serverSocket.on('opponentTowerDestroy', (data) => {});
+
+  //아이템 모든 몬스터 삭제
+  serverSocket.on('removeItemMonster', (data) => {
+    eventHandler.itemMonsterDead(data);
+  });
+  serverSocket.on('removeItemOpponentMonster', (data) => {
+    eventHandler.opponentItemMonsterDead(data);
+  });
+
+  serverSocket.on('ItemBaseHp', (data) => {
+    eventHandler.itemHeal(data);
+  });
   //채팅 이벤트
   serverSocket.on('opponentEmoji', (data) => {
     eventHandler.opponentEmoji(data);
@@ -461,7 +487,3 @@ buyTowerButton.style.display = 'none';
 buyTowerButton.addEventListener('click', placeNewTower);
 
 document.body.appendChild(buyTowerButton);
-
-document.querySelector('#skill').addEventListener('click', () => {
-  eventHandler.skill();
-});
