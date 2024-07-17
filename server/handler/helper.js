@@ -3,8 +3,9 @@ import { deletePlayerFromMatchModel, deleteMatchedPlayer } from '../models/match
 import { removeUser } from '../models/user.model.js';
 import handlerMappings from './handlerMapping.js';
 import configs from '../util/config.js';
-// import { getHightScoreUsers } from '../models/score.model.js';
 import jwt from 'jsonwebtoken';
+import CustomError from '../util/error/customError.js';
+import { ErrorCodes } from '../util/error/errorCodes.js';
 
 export const handleDisconnect = (socket, io) => {
   deletePlayerFromMatchModel(socket); // 매칭 대기열에 있었다면 대기열에서 삭제
@@ -22,12 +23,12 @@ export const handleConnection = (socket) => {
     if (!token) {
       // 토큰이 없으면 연결 종료
       socket.disconnect();
-      reject(new CustomError('토큰이 존재하지 않습니다 로그인을 해 주세요', ErrorCodes.HAVE_NO_TOKEN));
+      reject(new CustomError(ErrorCodes.HAVE_NO_TOKEN, '토큰이 존재하지 않습니다 로그인을 해 주세요'));
     } else {
       jwt.verify(token, jwtSecret, (err, tokenPayload) => {
         if (err) {
           socket.disconnect();
-          reject(new CustomError('JWT 검증중 오류 발생', ErrorCodes.JWT_VERIFY_FAILED));
+          reject(new CustomError(ErrorCodes.JWT_VERIFY_FAILED, 'JWT 검증중 오류 발생'));
         } else {
           socket.data = {
             userId: tokenPayload.userId,
@@ -41,14 +42,12 @@ export const handleConnection = (socket) => {
 
 export const handlerEvent = (socket, data, io) => {
   if (!CLIENT_VERSION.includes(data.clientVersion)) {
-    socket.emit('response', { status: 'fail', message: 'Client version mismatch!' });
-    return;
+    throw new CustomError(ErrorCodes.CLIENT_VERSION_MISMATCH, 'Client version mismatch!');
   }
 
   const handler = handlerMappings[data.handlerId];
   if (!handler) {
-    socket.emit('response', { status: 'fail', message: 'Handler not found' });
-    return;
+    throw new CustomError(ErrorCodes.UNKNOWN_HANDLER_ID, 'Handler not found');
   }
 
   const response = handler(data.userId, data.payload, socket, io);

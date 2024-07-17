@@ -1,3 +1,7 @@
+import CustomError from '../util/error/customError.js';
+import { handleError } from '../util/error/errorHandler.js';
+import { ErrorCodes } from '../util/error/errorCodes.js';
+
 /**
  * 현재 경기중인 상대방의 socketID를 반환하는 함수
  * @param {socket} socket
@@ -19,7 +23,10 @@ const findOpponent = (socket) => {
     }
     return null; // 상대가 없을 경우 null 반환
   } catch (error) {
-    console.error('방 정보를 조회하는데 실패했습니다 전달 받은 정보:', socket);
+    handleError(
+      socket,
+      new CustomError(ErrorCodes.FIND_OPPONENT_FAILED, '상대방을 찾는데 실패했습니다. 전달 받은 정보:', socket),
+    );
   }
 };
 
