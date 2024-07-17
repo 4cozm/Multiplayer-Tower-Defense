@@ -2,6 +2,8 @@ import CustomError from '../util/error/customError.js';
 import { handleError } from '../util/error/errorHandler.js';
 import { ErrorCodes } from '../util/error/errorCodes.js';
 
+import { getMatchedPlayers } from '../models/match.model.js';
+
 /**
  * 현재 경기중인 상대방의 socketID를 반환하는 함수
  * @param {socket} socket

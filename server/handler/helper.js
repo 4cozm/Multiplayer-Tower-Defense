@@ -41,6 +41,7 @@ export const handleConnection = (socket) => {
 };
 
 export const handlerEvent = (socket, data, io) => {
+  
   if (!CLIENT_VERSION.includes(data.clientVersion)) {
     throw new CustomError(ErrorCodes.CLIENT_VERSION_MISMATCH, 'Client version mismatch!');
   }

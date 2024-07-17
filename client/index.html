@@ -102,9 +102,12 @@
         display: none;
       }
       #chat_container {
-        width: 300px;
-        height: 300px;
-        background-color: azure;
+        user-select: none; /* 텍스트 선택 비활성화 */
+        -webkit-user-drag: none; /* 크롬, 사파리에서 드래그 비활성화 */
+        width: 600px;
+        height: 40vh;
+        background-color: rgba(240, 255, 255, 0.7);
+        z-index: 10;
         position: fixed;
         left: 10px;
         bottom: 10px;
@@ -118,14 +121,13 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        width: 290px;
-        height: 50px;
-        padding-left: 5px;
-        padding-right: 5px;
-        border-bottom: 1px solid skyblue;
+        width: 95%;
+        height: 5vh;
+        padding: 10px;
+        border-bottom: 3px solid skyblue;
       }
       #chat_header_message {
-        font-size: 20px;
+        font-size: 2.5vh;
         font-weight: bold;
       }
       #chat_x {
@@ -135,36 +137,44 @@
       }
       #chat_footer {
         width: 100%;
+        height: 10%;
         display: flex;
         justify-content: space-around;
-        border-top: 1px solid skyblue;
+        border-top: 3px solid skyblue;
         margin-bottom: 10px;
         padding-top: 10px;
       }
       #chat_body {
         overflow: scroll;
         width: 100%;
-        height: 100%;
+        height: 28vh;
       }
       #chat_body::-webkit-scrollbar {
         display: none; /* Hide scrollbar for WebKit browsers */
       }
 
       .chat {
-        padding-left: 15px;
+        padding-left: 35px;
+        font-size: 2vw;
       }
       .chat_right {
+        font-size: 2vw;
         max-width: 90%;
         text-align: right;
       }
       #chat_input {
-        width: 230px;
+        width: 80%;
+        font-size: 30px;
         border: none;
-        background-color: bisque;
+        border-radius: 10px;
       }
       #chat_submit {
+        height: 100%;
+        line-height: 250%;
+        width: 14%;
         cursor: pointer;
-        font-size: 15px;
+        font-size: 25px;
+        text-align: center;
       }
 
       /* 모달 스타일 정의 */
@@ -203,6 +213,18 @@
         text-decoration: none;
         cursor: pointer;
       }
+      #skill {
+        height: 45px;
+        width: 140px;
+        font-size: 20px;
+        position: absolute;
+        top: 10px;
+        right: 120px;
+        padding: 10px, 20px;
+        cursor: pointer;
+        display: none;
+        margin-right: 10px;
+      }
     </style>
   </head>
   <body>
@@ -240,10 +262,11 @@
         <!-- 공백 문자 있습니당 지우면 안돼용-->
       </div>
       <div id="chat_footer">
-        <input id="chat_input" placeholder="내용을 입력하세요" />
+        <input id="chat_input"autocomplete="off" placeholder="내용을 입력하세요" />
         <div id="chat_submit">보내기</div>
       </div>
     </div>
+    <button id="skill">스킬(200원)</button>
     <!-- 모달 구조 -->
     <div id="errorModal" class="modal">
       <div class="modal-content">
@@ -280,4 +303,3 @@
     <!-- <script type="module" src="./src/handlers/chat/chat.handler.js"></script> -->
   </body>
 </html>
-,
