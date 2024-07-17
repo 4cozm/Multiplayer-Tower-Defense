@@ -22,7 +22,7 @@ export const opponentTowerAttack = (data, game) => {
     return item.uuid == towerId;
   });
   if (!tower) {
-    console.error('적 타워 공격 처리를 실행할 수 없습니다 타워 정보 없음:', tower);
+    openModal('적 타워 공격 처리를 실행할 수 없습니다 타워 정보 없음:', tower);
   }
   const monster = game.opponentMonsters.find((item) => {
     return item.monsterID == monsterId;

@@ -415,7 +415,14 @@ Promise.all([
   //에러 이벤트
   serverSocket.on('error', (errorResponse) => {
     openModal(errorResponse.data.message);
-    // location.href = '/login.html';
+    if (
+      errorResponse.responseCode === 40001 ||
+      errorResponse.responseCode === 50000 ||
+      errorResponse.responseCode === 50001
+    ) {
+      alert(`${errorResponse.data.message} 로그인 페이지로 이동합니다.`);
+      location.href = '/login.html';
+    }
   });
 });
 
