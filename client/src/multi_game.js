@@ -52,8 +52,7 @@ window.onclick = function (event) {
     closeModalFunction();
   }
 };
-
-const NUM_OF_MONSTERS = 5; // 몬스터 개수
+const NUM_OF_MONSTERS = 6; // 몬스터 개수
 
 // 이미지 로딩 파트
 const backgroundImage = new Image();
@@ -315,6 +314,7 @@ Promise.all([
         progressBarContainer.style.display = 'none';
         progressBar.style.display = 'none';
         buyTowerButton.style.display = 'block';
+        document.querySelector('#skill').style.display = 'block';
         canvas.style.display = 'block';
         opponentCanvas.style.display = 'block';
 
@@ -408,8 +408,12 @@ Promise.all([
 
   //채팅 입력
   serverSocket.on('chat', (data) => {
-    console.log(data);
     eventHandler.makeChat(data);
+  });
+
+  //스킬 공격당함
+  serverSocket.on('skillHeat', (data) => {
+    eventHandler.skillHeat(data);
   });
 
   //에러 이벤트
@@ -457,3 +461,7 @@ buyTowerButton.style.display = 'none';
 buyTowerButton.addEventListener('click', placeNewTower);
 
 document.body.appendChild(buyTowerButton);
+
+document.querySelector('#skill').addEventListener('click', () => {
+  eventHandler.skill();
+});
