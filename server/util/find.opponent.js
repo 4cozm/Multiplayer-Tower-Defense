@@ -41,6 +41,9 @@ export const findOpponentUserId = (socket) => {
     }
     return playerMatchData.opponentUserId;
   } catch (error) {
-    console.error('적 아이디를 찾아오는 과정에서 문제가 발생했습니다', error);
+    handleError(
+      socket,
+      new CustomError(ErrorCodes.FIND_OPPONENT_ID_FAILED, '적 아이디를 찾아오는 과정에서 문제가 발생했습니다.'),
+    );
   }
 };

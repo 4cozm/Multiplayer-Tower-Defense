@@ -1,7 +1,7 @@
 import { addMatch, getMatchPlayers, clearMatchPlayers } from '../models/match.model.js';
 import { v4 as uuid } from 'uuid';
 import { addMatchedPlayers } from '../models/match.model.js';
-import { logError } from '../models/log.model.js';
+import { setLog } from '../db/log/log.db.js';
 import { handleError } from '../util/error/errorHandler.js';
 
 export const matchGame = async (userId, socket, io) => {
@@ -39,7 +39,7 @@ export const matchGame = async (userId, socket, io) => {
       clearMatchPlayers();
     }
   } catch (error) {
-    logError(userId, error.message);
+    setLog(userId, error.message);
     handleError(socket, error);
   }
 };
