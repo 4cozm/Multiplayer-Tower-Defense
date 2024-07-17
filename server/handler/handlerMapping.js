@@ -8,7 +8,7 @@ import { skill } from './skill.handler.js';
 import { buyItem } from './item.handler.js';
 
 const handlerMappings = {
-  1: matchGame, // 현재는 안쓰는중
+  //1: matchGame,
   10: initialData,
   //   5: initTower,
   6: buyTower,

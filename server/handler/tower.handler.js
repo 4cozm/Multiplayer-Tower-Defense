@@ -7,7 +7,7 @@ import { killMonster } from './monster.handler.js';
 import CustomError from '../util/error/customError.js';
 import { handleError } from '../util/error/errorHandler.js';
 import { ErrorCodes } from '../util/error/errorCodes.js';
-import { logError } from '../models/log.model.js';
+import { setLog } from '../db/log/log.db.js';
 
 export const buyTower = (userId, payload, socket, io) => {
   try {
@@ -45,7 +45,7 @@ export const buyTower = (userId, payload, socket, io) => {
     const tower = setTower(userId, x, y, 1, uuid, power, serverTime);
     console.log('타워 구입됨', tower.towerId);
   } catch (error) {
-    // logError(userId, error.message); // 테스트용
+    setLog(userId, error.message); // 테스트용
     handleError(socket, error);
   }
 };
@@ -89,7 +89,7 @@ export const attackTower = (userId, payload, socket, io) => {
 
     setTowerAttackLog(userId, towerId, monsterId, tower.power, serverTime); //공격에 대한 정보를 서버에 저장
   } catch (error) {
-    logError(userId, error.message);
+    setLog(userId, error.message);
     handleError(socket, error);
   }
 };
