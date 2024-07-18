@@ -69,7 +69,8 @@ export const attackTower = (userId, payload, socket, io) => {
 
     if (!monster) {
       //해당 ID의 몬스터가 존재하는지 체크
-      throw new CustomError(ErrorCodes.MONSTER_NOT_FOUND, '몬스터 정보를 찾을 수 없습니다.');
+      console.log('몬스터 정보가 존재하지 않습니다. 공격을 무효화 합니다');
+      return;
     }
 
     //타워 -> 몬스터 공격처리 및 사망처리

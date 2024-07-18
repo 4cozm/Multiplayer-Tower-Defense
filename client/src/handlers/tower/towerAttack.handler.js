@@ -8,7 +8,7 @@ export const towerAttack = (data, game) => {
     return item.monsterID == monsterId;
   });
   if (!monster) {
-    console.log('몬스터 정보가 존재하지 않습니다. 공격을 무효화 합니다');
+    openModal('몬스터 정보가 없습니다.:', monster);
     return;
   }
 
