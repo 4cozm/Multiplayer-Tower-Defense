@@ -5,6 +5,7 @@ import { buyTower, attackTower } from './tower.handler.js';
 import { monsterAttackBase, spawnMonster } from './monster.handler.js';
 import { endGame } from './game.handler.js';
 import { skill } from './skill.handler.js';
+import { buyItem } from './item.handler.js';
 
 const handlerMappings = {
   //1: matchGame,
@@ -21,6 +22,7 @@ const handlerMappings = {
   // 20: endGame,
   40: spawnMonster,
   50: monsterAttackBase,
+  70: buyItem,
   31: requestChat,
   99: endGame,
   100: emoji,

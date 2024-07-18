@@ -1,6 +1,5 @@
 import express from 'express';
 import { createServer } from 'http';
-import cors from 'cors';
 import { getGameAssets, loadGameAssets } from '../server/init/assets.js';
 import accountRouter from './routes/user.router.js';
 import configs from './util/config.js';
@@ -9,7 +8,6 @@ import initSocket from './init/socket.js';
 const app = express();
 const server = createServer(app);
 
-app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static('client'));
