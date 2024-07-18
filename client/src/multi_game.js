@@ -282,7 +282,7 @@ Promise.all([
   new Promise((resolve) => (pathImage.onload = resolve)),
   ...monsterImages.map((img) => new Promise((resolve) => (img.onload = resolve))),
 ]).then(() => {
-  serverSocket = io('http://127.0.0.1:5555', {
+  serverSocket = io('http://127.0.0.1:5555/', {
     auth: {
       token: localStorage.getItem('token'),
     },
@@ -329,6 +329,7 @@ Promise.all([
       eventHandler.initializeGameState(initialGameData);
       console.log('게임 초기화 데이터:', game, '출력시간', Date.now());
       initGame();
+      document.querySelector('#skill').style.display = 'block';
     }
     eventHandler.opponentMoveEmoji(game.basePosition);
     eventHandler.moveEmoji(game.opponentBasePosition);
