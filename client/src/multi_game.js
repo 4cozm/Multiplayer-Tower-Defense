@@ -167,6 +167,18 @@ function placeNewTower() {
   sendEvent(6, { x, y });
 }
 
+function monsterBomb() {
+  sendEvent(70, { itemId: 4 });
+}
+
+function baseHeal() {
+  sendEvent(70, { itemId: 3 });
+}
+
+function towerBomb() {
+  sendEvent(70, { itemId: 1 });
+}
+
 function placeBase(position, isPlayer) {
   if (isPlayer) {
     game.base = new Base(position.x, position.y, game.baseHp);
@@ -282,7 +294,7 @@ Promise.all([
   new Promise((resolve) => (pathImage.onload = resolve)),
   ...monsterImages.map((img) => new Promise((resolve) => (img.onload = resolve))),
 ]).then(() => {
-  serverSocket = io('http://127.0.0.1:5555/', {
+  serverSocket = io('http://3.35.207.57:5555/', {
     auth: {
       token: localStorage.getItem('token'),
     },
@@ -314,10 +326,11 @@ Promise.all([
         progressBarContainer.style.display = 'none';
         progressBar.style.display = 'none';
         buyTowerButton.style.display = 'block';
-        document.querySelector('#skill').style.display = 'block';
+        buyTowerBombButton.style.display = 'block';
+        buyBombButton.style.display = 'block';
+        buyHealButton.style.display = 'block';
         canvas.style.display = 'block';
         opponentCanvas.style.display = 'block';
-
         // TODO. 유저 및 상대방 유저 데이터 초기화
         sendEvent(10);
       }
@@ -402,6 +415,27 @@ Promise.all([
     eventHandler.opponentTowerAttack(data);
   });
 
+  //아이템 타워 파괴
+  serverSocket.on('towerDestroy', (data) => {
+    eventHandler.itemTowerDestroy(data);
+  });
+
+  serverSocket.on('opponentTowerDestroy', (data) => {
+    eventHandler.opponentItemTowerDestroy(data);
+  });
+
+  //아이템 모든 몬스터 삭제
+  serverSocket.on('removeItemMonster', (data) => {
+    eventHandler.itemMonsterDead(data);
+  });
+  serverSocket.on('removeItemOpponentMonster', (data) => {
+    eventHandler.opponentItemMonsterDead(data);
+  });
+
+  //아이템 베이스 체력 회복
+  serverSocket.on('ItemBaseHp', (data) => {
+    eventHandler.itemHeal(data);
+  });
   //채팅 이벤트
   serverSocket.on('opponentEmoji', (data) => {
     eventHandler.opponentEmoji(data);
@@ -463,6 +497,44 @@ buyTowerButton.addEventListener('click', placeNewTower);
 
 document.body.appendChild(buyTowerButton);
 
-document.querySelector('#skill').addEventListener('click', () => {
-  eventHandler.skill();
-});
+const buyTowerBombButton = document.createElement('button');
+buyTowerBombButton.textContent = '타워 폭탄 구매';
+buyTowerBombButton.style.position = 'absolute';
+buyTowerBombButton.style.top = '150px';
+buyTowerBombButton.style.right = '150px';
+buyTowerBombButton.style.padding = '10px 20px';
+buyTowerBombButton.style.fontSize = '16px';
+buyTowerBombButton.style.cursor = 'pointer';
+buyTowerBombButton.style.display = 'none';
+
+buyTowerBombButton.addEventListener('click', towerBomb);
+
+document.body.appendChild(buyTowerBombButton);
+
+const buyBombButton = document.createElement('button');
+buyBombButton.textContent = '폭탄 구매';
+buyBombButton.style.position = 'absolute';
+buyBombButton.style.top = '60px';
+buyBombButton.style.right = '10px';
+buyBombButton.style.padding = '10px 20px';
+buyBombButton.style.fontSize = '16px';
+buyBombButton.style.cursor = 'pointer';
+buyBombButton.style.display = 'none';
+
+buyBombButton.addEventListener('click', monsterBomb);
+
+document.body.appendChild(buyBombButton);
+
+const buyHealButton = document.createElement('button');
+buyHealButton.textContent = '힐 구매';
+buyHealButton.style.position = 'absolute';
+buyHealButton.style.top = '60px';
+buyHealButton.style.right = '150px';
+buyHealButton.style.padding = '10px 20px';
+buyHealButton.style.fontSize = '16px';
+buyHealButton.style.cursor = 'pointer';
+buyHealButton.style.display = 'none';
+
+buyHealButton.addEventListener('click', baseHeal);
+
+document.body.appendChild(buyHealButton);
