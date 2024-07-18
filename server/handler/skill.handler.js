@@ -7,6 +7,11 @@ export const skill = (userId, _, socket, io) => {
   const opponent = findOpponent(socket);
   const opponentUserId = findOpponentUserId(socket);
 
+  const user = getUserById(userId);
+  user.userGold -= 200;
+
+  socket.emit('updateGameState', { userGold: user.userGold });
+
   //스킬로 생성되는 몬스터의 정보 원래는 JSON에 저장된 데이터를 가져오는게 맞음
   const monsterHp = 11;
   const monsterPower = 1;

@@ -31,7 +31,7 @@ const modalMessage = document.getElementById('modalMessage');
 const closeModal = document.getElementsByClassName('close')[0];
 
 // 모달을 여는 함수
-function openModal(message) {
+export function openModal(message) {
   modalMessage.textContent = message;
   errorModal.style.display = 'block';
 }
@@ -52,6 +52,7 @@ window.onclick = function (event) {
     closeModalFunction();
   }
 };
+
 const NUM_OF_MONSTERS = 6; // 몬스터 개수
 
 // 이미지 로딩 파트
@@ -162,7 +163,6 @@ function placeNewTower() {
   //   return;
   // }
   const { x, y } = getRandomPositionNearPath(200);
-  console.log(x, y);
   //서버로 포탑 좌표 전달
   sendEvent(6, { x, y });
 }
@@ -294,7 +294,7 @@ Promise.all([
   new Promise((resolve) => (pathImage.onload = resolve)),
   ...monsterImages.map((img) => new Promise((resolve) => (img.onload = resolve))),
 ]).then(() => {
-  serverSocket = io('http://3.35.207.57:5555/', {
+  serverSocket = io('http://127.0.0.1:5555', {
     auth: {
       token: localStorage.getItem('token'),
     },
