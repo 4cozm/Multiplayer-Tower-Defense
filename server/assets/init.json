@@ -1,0 +1,12 @@
+{
+  "name": "init",
+  "version": "1.0.0",
+  "data": {
+    "userGold": 1000,
+    "baseHp": 200,
+    "towerCost": 200,
+    "monsterLevel": 1,
+    "monsterSpawnInterval": 1200,
+    "score": 0
+  }
+}

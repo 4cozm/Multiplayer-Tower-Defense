@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="Changmin Kang" />
+    <title>내일배움캠프 Node.js 트랙 타워 디펜스 게임 온라인</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #2d2d2d;
+        flex-direction: column;
+      }
+      #gameCanvas {
+        border: 2px solid #000;
+        display: none;
+      }
+      #opponentCanvas {
+        border: 2px solid #000;
+        display: none;
+      }
+      .button-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+      }
+      .button-container button {
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      #progressBarContainer {
+        display: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: white;
+      }
+      #progressBar {
+        width: 100%;
+        height: 70px;
+      }
+      .loader {
+        border: 16px solid #f3f3f3;
+        border-top: 16px solid #3498db;
+        border-radius: 50%;
+        width: 70px;
+        height: 70px;
+        animation: spin 2s linear infinite;
+        margin-bottom: 20px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      #emoji_container,
+      #opponent_emoji_container {
+        width: 200px;
+        height: auto;
+        position: absolute;
+        transform: translate(-50%, -50%);
+        z-index: 5;
+        opacity: 0;
+        transition: opacity 1s ease;
+        pointer-events: none;
+      }
+
+      #emoji,
+      #opponent_emoji {
+        max-width: 100%;
+        max-height: 100%;
+        width: auto;
+        height: auto;
+      }
+      #chat_open_btn {
+        position: fixed;
+        left: 10px;
+        bottom: 10px;
+        font-size: 20px;
+        font-weight: bold;
+        background-color: azure;
+        border: 1px solid black;
+        border-radius: 10px;
+        padding: 10px;
+        cursor: pointer;
+        display: none;
+      }
+      #chat_container {
+        user-select: none; /* 텍스트 선택 비활성화 */
+        -webkit-user-drag: none; /* 크롬, 사파리에서 드래그 비활성화 */
+        width: 600px;
+        height: 40vh;
+        background-color: rgba(240, 255, 255, 0.7);
+        z-index: 10;
+        position: fixed;
+        left: 10px;
+        bottom: 10px;
+        display: none;
+        justify-content: space-between;
+        align-items: center;
+        flex-direction: column;
+        border-radius: 10px;
+      }
+      #chat_header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 95%;
+        height: 5vh;
+        padding: 10px;
+        border-bottom: 3px solid skyblue;
+      }
+      #chat_header_message {
+        font-size: 2.5vh;
+        font-weight: bold;
+      }
+      #chat_x {
+        max-width: 50%;
+        max-height: 50%;
+        cursor: pointer;
+      }
+      #chat_footer {
+        width: 100%;
+        height: 10%;
+        display: flex;
+        justify-content: space-around;
+        border-top: 3px solid skyblue;
+        margin-bottom: 10px;
+        padding-top: 10px;
+      }
+      #chat_body {
+        overflow: scroll;
+        width: 100%;
+        height: 28vh;
+      }
+      #chat_body::-webkit-scrollbar {
+        display: none; /* Hide scrollbar for WebKit browsers */
+      }
+
+      .chat {
+        padding-left: 35px;
+        font-size: 2vw;
+      }
+      .chat_right {
+        font-size: 2vw;
+        max-width: 90%;
+        text-align: right;
+      }
+      #chat_input {
+        width: 80%;
+        font-size: 30px;
+        border: none;
+        border-radius: 10px;
+      }
+      #chat_submit {
+        height: 100%;
+        line-height: 250%;
+        width: 14%;
+        cursor: pointer;
+        font-size: 25px;
+        text-align: center;
+      }
+
+      /* 모달 스타일 정의 */
+      .modal {
+        display: none; /* 숨김 상태로 시작 */
+        position: fixed; /* 페이지 전체에 걸쳐 고정 */
+        z-index: 1; /* 최상위 레이어에 위치 */
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgb(0, 0, 0);
+        background-color: rgba(0, 0, 0, 0.4); /* 검은 배경에 투명도 적용 */
+      }
+
+      .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto; /* 모달 내용을 화면 중앙에 위치 */
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 600px; /* 최대 너비 설정 */
+      }
+
+      .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+      }
+
+      .close:hover,
+      .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      #skill {
+        height: 45px;
+        width: 140px;
+        font-size: 20px;
+        position: absolute;
+        top: 10px;
+        right: 120px;
+        padding: 10px, 20px;
+        cursor: pointer;
+        display: none;
+        margin-right: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="button-container">
+      <img src="/images/logo.png" alt="logo" />
+      <button id="registerButton">회원가입</button>
+      <button id="loginButton">로그인</button>
+      <button id="loginButton2">로그인2 (로컬에서 2인 테스트 할 때 사용)</button>
+      <button id="matchButton">다른 유저와 대결하기</button>
+      <button id="matchButton2">다른 유저와 대결하기2 (로컬에서 2인 테스트 할 때 사용)</button>
+    </div>
+    <div id="progressBarContainer">
+      <h1 id="progressBarMessage" style="color: white">대결 상대를 탐색중입니다!</h1>
+      <div class="loader"></div>
+      <progress id="progressBar" max="100" value="0" style="display: none"></progress>
+    </div>
+    <canvas id="gameCanvas" width="1500" height="680"></canvas>
+    <canvas id="opponentCanvas" width="1500" height="680"></canvas>
+    <div id="emoji_container">
+      <img id="emoji" src="images/emoji/1.png" />
+    </div>
+    <div id="opponent_emoji_container">
+      <img id="opponent_emoji" src="images/emoji/1.png" />
+    </div>
+    <div id="chat_open_btn">채팅</div>
+    <div id="chat_container">
+      <div id="chat_header">
+        <p id="chat_header_message">채팅</p>
+        <img id="chat_x" src="images/x.png" />
+      </div>
+      <div id="chat_body">
+        <p class="chat">ㅤ</p>
+        <p class="chat">ㅤ</p>
+        <p class="chat">ㅤ</p>
+        <!-- 공백 문자 있습니당 지우면 안돼용-->
+      </div>
+      <div id="chat_footer">
+        <input id="chat_input"autocomplete="off" placeholder="내용을 입력하세요" />
+        <div id="chat_submit">보내기</div>
+      </div>
+    </div>
+    <button id="skill">스킬
+    </button>
+    <!-- 모달 구조 -->
+    <div id="errorModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <p id="modalMessage"></p>
+      </div>
+    </div>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script type="module">
+      document.getElementById('registerButton').addEventListener('click', () => {
+        window.location.href = 'register.html';
+      });
+
+      document.getElementById('loginButton').addEventListener('click', () => {
+        window.location.href = 'login.html';
+      });
+
+      document.getElementById('loginButton2').addEventListener('click', () => {
+        window.location.href = 'login2.html';
+      });
+
+      document.getElementById('matchButton').addEventListener('click', () => {
+        document.querySelector('.button-container').style.display = 'none';
+        document.getElementById('progressBarContainer').style.display = 'block';
+        import('./src/multi_game.js');
+      });
+
+      document.getElementById('matchButton2').addEventListener('click', () => {
+        document.querySelector('.button-container').style.display = 'none';
+        document.getElementById('progressBarContainer').style.display = 'block';
+        import('./src/multi_game2.js');
+      });
+    </script>
+    <!-- <script type="module" src="./src/handlers/chat/chat.handler.js"></script> -->
+  </body>
+</html>

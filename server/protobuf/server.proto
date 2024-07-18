@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+message ChatMessage {
+    string userId = 1;
+    string message = 2;
+}
+
+message GameState {
+    string monsterPath = 1;
+    string opponentMonsterPath = 2;
+    string basePosition = 3;
+    string opponentBasePosition = 4;
+    int32 userGold = 5;
+    int32 baseHp = 6;
+    int32 towerCost = 7;
+    int32 monsterLevel = 8;
+    int32 monsterSpawnInterval = 9;
+    int32 score = 10;
+    int32 highScore = 11;
+    int32 userHighScore = 12;
+    int32 userRank = 13;
+    int32 opponentRank = 14;
+}
+
+message MatchFound {
+    string userId = 1;
+}
+
+message UpdateGameState {
+    int32 baseHp = 1;
+    int32 score = 2;
+    int32 userGold = 3;
+    int32 monsterLevel = 4;
+}
+
+message TowerAction {
+    int32 x = 1;
+    int32 y = 2;
+    string uuid = 3;
+}
+
+message GameOver {
+    bool isWin = 1;
+}
+
+message TowerAttack {
+    string monsterId = 1;
+    int32 hp = 2;
+}
+
+message MonsterAction {
+    string monsterId = 1;
+    int64 timeStamp = 2;
+}

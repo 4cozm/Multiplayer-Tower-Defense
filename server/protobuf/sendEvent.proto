@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+message EventPayload {
+    string userId = 1;
+    string clientVersion = 2;
+    string handlerId = 3;
+    bytes payload = 4;  // Payload는 바이너리 형식으로 전송
+}
