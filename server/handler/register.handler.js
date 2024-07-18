@@ -3,7 +3,6 @@ import { handleConnection, handleDisconnect, handlerEvent } from './helper.js';
 import { getGameAssets } from '../init/assets.js';
 import { matchGame } from './match.handler.js';
 
-
 const registerHandler = (io) => {
   io.on('connection', async (socket) => {
     console.log('클라이언트 연결됨', socket.id);
@@ -21,7 +20,7 @@ const registerHandler = (io) => {
     }
 
     socket.on('event', (data) => handlerEvent(socket, data, io));
-    socket.on('disconnect', () => handleDisconnect(socket, io)); //socket 객체를 직접 사용해야 함
+    socket.on('disconnect', () => handleDisconnect(socket, io));
   });
 };
 

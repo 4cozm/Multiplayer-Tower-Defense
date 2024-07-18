@@ -8,18 +8,9 @@ import { skill } from './skill.handler.js';
 import { buyItem } from './item.handler.js';
 
 const handlerMappings = {
-  //1: matchGame,
   10: initialData,
-  //   5: initTower,
   6: buyTower,
   7: attackTower,
-  //   8: refundTower,
-  //   9: upgradeTower,
-  //   12: removeMonster,
-  //   13: damageMonster,
-  //   14: monsterAttackBase,
-  //   15: checkForBreak,
-  // 20: endGame,
   40: spawnMonster,
   50: monsterAttackBase,
   70: buyItem,

@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-export let gameAssets = {}; //loadGameAssets 쓰면 이상하게 작동하지 않음..
+export let gameAssets = {};
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,15 +25,13 @@ const readFileAsync = (filename) => {
 
 export const loadGameAssets = async () => {
   try {
-    // 사용할 asset 작성
-    const [init, itemData, levelsData, towerData] = await Promise.all([
+    const [init, itemData, levelsData] = await Promise.all([
       readFileAsync('init.json'),
       readFileAsync('item.json'),
       readFileAsync('level.json'),
-      readFileAsync('tower.json'),
     ]);
 
-    gameAssets = { init, itemData, levelsData, towerData };
+    gameAssets = { init, itemData, levelsData };
     console.log('JSON 데이터 로드 완료!');
   } catch (e) {
     throw new Error('Failed to load game assets: ' + e.message);

@@ -41,7 +41,6 @@ export const handleConnection = (socket) => {
 };
 
 export const handlerEvent = (socket, data, io) => {
-  
   if (!CLIENT_VERSION.includes(data.clientVersion)) {
     throw new CustomError(ErrorCodes.CLIENT_VERSION_MISMATCH, 'Client version mismatch!');
   }
@@ -53,6 +52,5 @@ export const handlerEvent = (socket, data, io) => {
 
   const response = handler(data.userId, data.payload, socket, io);
 
-  // 유저 한명에게만 보내는 정보 이후에 들어온 socketid로 상대방 데이터를 보내는 코드도 필요함
   socket.emit('response', response);
 };

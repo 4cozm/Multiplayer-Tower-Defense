@@ -1,5 +1,4 @@
 const monsters = {};
-const verifyMonsters = {};
 
 export const addMonster = (userId, uuid, hp, power) => {
   if (!monsters[userId]) {
