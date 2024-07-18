@@ -44,9 +44,9 @@
 
 ## 👀 프로젝트 미리보기
 
-![a6dd08f46d8c5ed968689300d7b7c55a](https://github.com/user-attachments/assets/c089e5c3-2958-45a2-81dd-9486d38ed121)
+![스크린샷 2024-07-18 164639](https://github.com/user-attachments/assets/99657aed-70f8-4391-acd6-07077de5c14f)
 
-### 📹 [시연 영상](https://youtu.be/Twi92KYddW4?si=vkwregDwiyoZqwjt)
+### 📹 [시연 영상](https://www.youtube.com/watch?v=W3j1lFISKG8&feature=youtu.be)
 
 ## 🛡️ 프로젝트 주요 기능
 
@@ -116,9 +116,9 @@
 
 #### **⚡ 스킬 사용 기능**
 
-- 상대방의 타워 중 1개를 랜덤으로 선택하여 파괴할 수 있습니다.
+- 현재 생성되어있는 상대방의 모든 타워를 파괴할 수 있습니다.
 - 내 기지 HP를 일정량 회복할 수 있습니다.
-- 현재 화면에 생성돼있는 모든 몬스터를 삭제할 수 있습니다.
+- 현재 내 화면에 생성돼있는 모든 몬스터를 삭제할 수 있습니다.
 - 모든 스킬은 일정량의 골드를 지불하고 화면 오른쪽 상단에서 버튼을 클릭하여 사용할 수 있습니다.
 
 #### **🏃‍♂️ 탈주 시 게임 종료 기능**
