@@ -9,7 +9,7 @@ export const matchGame = async (userId, socket, io) => {
     const matchArray = getMatchPlayers();
     const userExists = matchArray.some((item) => item.userId === userId);
     if (userExists) {
-      io.to(socket.id).emit('error', '이미 대기열에 포함되어 있습니다.다른 아이디로 다시 접속해 주세요');
+      io.to(socket.id).emit('error', '이미 대기열에 포함되어 있습니다. 다른 아이디로 다시 접속해 주세요.');
       socket.disconnect(); // 중복 접속 시 서버측도 소켓 연결 해제
       return;
     }

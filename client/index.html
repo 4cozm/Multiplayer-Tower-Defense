@@ -232,9 +232,7 @@
       <img src="/images/logo.png" alt="logo" />
       <button id="registerButton">회원가입</button>
       <button id="loginButton">로그인</button>
-      <button id="loginButton2">로그인2 (로컬에서 2인 테스트 할 때 사용)</button>
       <button id="matchButton">다른 유저와 대결하기</button>
-      <button id="matchButton2">다른 유저와 대결하기2 (로컬에서 2인 테스트 할 때 사용)</button>
     </div>
     <div id="progressBarContainer">
       <h1 id="progressBarMessage" style="color: white">대결 상대를 탐색중입니다!</h1>
@@ -262,12 +260,11 @@
         <!-- 공백 문자 있습니당 지우면 안돼용-->
       </div>
       <div id="chat_footer">
-        <input id="chat_input"autocomplete="off" placeholder="내용을 입력하세요" />
+        <input id="chat_input" autocomplete="off" placeholder="내용을 입력하세요" />
         <div id="chat_submit">보내기</div>
       </div>
     </div>
-    <button id="skill">스킬
-    </button>
+    <button id="skill">스킬</button>
     <!-- 모달 구조 -->
     <div id="errorModal" class="modal">
       <div class="modal-content">
@@ -285,20 +282,10 @@
         window.location.href = 'login.html';
       });
 
-      document.getElementById('loginButton2').addEventListener('click', () => {
-        window.location.href = 'login2.html';
-      });
-
       document.getElementById('matchButton').addEventListener('click', () => {
         document.querySelector('.button-container').style.display = 'none';
         document.getElementById('progressBarContainer').style.display = 'block';
         import('./src/multi_game.js');
-      });
-
-      document.getElementById('matchButton2').addEventListener('click', () => {
-        document.querySelector('.button-container').style.display = 'none';
-        document.getElementById('progressBarContainer').style.display = 'block';
-        import('./src/multi_game2.js');
       });
     </script>
     <!-- <script type="module" src="./src/handlers/chat/chat.handler.js"></script> -->

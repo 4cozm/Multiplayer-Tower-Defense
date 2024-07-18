@@ -211,9 +211,9 @@ function gameLoop() {
   ctx.fillStyle = 'black';
   ctx.fillText(`현재 레벨: ${game.monsterLevel}`, 100, 250); // 최고 기록 표시
   ctx.fillStyle = 'mintcream';
-  ctx.fillText(`나의 게임 랭킹: ${game.userRank}위`, 350, 50); // 나의 랭킹 표시
+  ctx.fillText(`나의 게임 랭킹: ${game.userRank}위`, 400, 50); // 나의 랭킹 표시
   ctx.fillStyle = 'mintcream';
-  ctx.fillText(`상대방 게임 랭킹: ${game.opponentRank}위`, 350, 100); // 상대방 랭킹 표시
+  ctx.fillText(`상대방 게임 랭킹: ${game.opponentRank}위`, 400, 100); // 상대방 랭킹 표시
 
   // 타워 그리기 및 몬스터 공격 처리
   game.towers.forEach((tower) => {
@@ -453,7 +453,12 @@ Promise.all([
 
   //에러 이벤트
   serverSocket.on('error', (errorResponse) => {
-    openModal(errorResponse.data.message);
+    if (errorResponse === '이미 대기열에 포함되어 있습니다. 다른 아이디로 다시 접속해 주세요.') {
+      console.log('실행확인');
+      alert(errorResponse);
+      location.href = '/login.html';
+      return;
+    }
     if (
       errorResponse.responseCode === 40001 ||
       errorResponse.responseCode === 50000 ||
@@ -462,6 +467,7 @@ Promise.all([
       alert(`${errorResponse.data.message} 로그인 페이지로 이동합니다.`);
       location.href = '/login.html';
     }
+    openModal(errorResponse.data.message);
   });
 });
 
