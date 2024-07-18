@@ -45,7 +45,8 @@ export const monsterAttackBase = (userId, payload, socket, io) => {
 
     const monsterInfo = getMonsterById(userId, monsterID);
     if (!monsterInfo) {
-      throw new CustomError(ErrorCodes.MONSTER_NOT_FOUND, '몬스터 정보를 찾을 수 없습니다.');
+      console.log('monsterID 오류 발생:', userId, monsterID);
+      throw new CustomError(ErrorCodes.MONSTER_NOT_FOUND, '몬스터 정보를 찾을 수 없습니다');
     }
     user.baseHp -= monsterInfo.power;
 

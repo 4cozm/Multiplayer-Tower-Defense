@@ -23,9 +23,7 @@ submit.addEventListener('click', () => {
   message.value = '';
 });
 document.addEventListener('keydown', (event) => {
-  console.log('키다운:', event);
   if (event.key === 'Enter' && chatBodyVisible) {
-    console.log('채팅 열려있고 엔터키 입력되어 메세지 바로 보냄');
     const message = document.querySelector('#chat_input');
     if (!message.value) {
       message.focus();
@@ -35,7 +33,6 @@ document.addEventListener('keydown', (event) => {
     message.value = '';
     message.focus();
   } else if (event.key === 'Enter') {
-    console.log('채팅창은 닫혀있지만 엔터키 입력하여 채팅창 꺼내기');
     document.querySelector('#chat_container').style.display = 'flex';
     chatBodyVisible = true;
     document.querySelector('#chat_input').focus();

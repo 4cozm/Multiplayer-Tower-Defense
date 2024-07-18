@@ -3,7 +3,7 @@ const verifyMonsters = {};
 
 export const addMonster = (userId, uuid, hp, power) => {
   if (!monsters[userId]) {
-    monsters[userId] = [];
+    monsters[userId] = {};
   }
   monsters[userId][uuid] = { hp, power, timestamp: Date.now() };
 };
@@ -21,5 +21,8 @@ export const removeAllMonster = (userId) => {
 };
 
 export const getMonsterById = (userId, monsterID) => {
-  return monsters[userId][monsterID];
+  if (monsters[userId] && monsters[userId][monsterID]) {
+    return monsters[userId][monsterID];
+  }
+  return null;
 };

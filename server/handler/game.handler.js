@@ -21,10 +21,12 @@ export const endGame = async (userId, socket) => {
     const currentTime = Date.now();
     const monsters = getSpawnMonster(userId);
 
-    monsters.forEach((monster) => {
-      if (currentTime - monster.timestamp > 13000) {
-        throw new CustomError(ErrorCodes.FAIL_TIMESTAMP_VERIFY, `검증 실패: 타임스탬프가 유효하지 않습니다.`);
-      }
+    Object.values(monsters).forEach((userMonsters) => {
+      Object.values(userMonsters).forEach((monster) => {
+        if (currentTime - monster.timestamp > 13000) {
+          throw new CustomError(ErrorCodes.FAIL_TIMESTAMP_VERIFY, `검증 실패: 타임스탬프가 유효하지 않습니다.`);
+        }
+      });
     });
 
     if (user.score > highScore) {
