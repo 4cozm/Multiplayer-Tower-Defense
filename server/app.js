@@ -1,6 +1,5 @@
 import express from 'express';
 import { createServer } from 'http';
-import cors from 'cors';
 import { getGameAssets, loadGameAssets } from '../server/init/assets.js';
 import accountRouter from './routes/user.router.js';
 import configs from './util/config.js';
